@@ -1,0 +1,73 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.nunnaguppala.suryaharsha.cnpokerclub.fragments.DefaultGroupSelectionFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/group_selection_instructions"
+        android:id="@+id/group_selection_instruction_text"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:includeFontPadding="true"
+        android:padding="@dimen/fab_margin"
+        android:layout_margin="@dimen/fab_margin"
+        />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/group_selection_spinner"
+        android:dropDownWidth="match_parent"
+        android:spinnerMode="dialog"
+        android:layout_below="@id/group_spinner_loading"
+        android:layout_centerHorizontal="true"
+        android:padding="@dimen/fab_margin"
+        android:layout_margin="@dimen/fab_margin"
+        />
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/group_spinner_loading"
+        android:layout_below="@+id/group_selection_instruction_text">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dip" >
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="1dip"
+                android:layout_marginLeft="5dip"
+                android:text="@string/loading"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <Button android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/group_selection_button_text"
+        android:layout_below="@id/group_selection_spinner"
+        android:layout_centerHorizontal="true"
+        android:padding="@dimen/fab_margin"
+        android:id="@+id/group_selection_button"
+        android:layout_margin="@dimen/fab_margin"
+        android:background="@android:color/holo_green_dark"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        />
+</RelativeLayout>
