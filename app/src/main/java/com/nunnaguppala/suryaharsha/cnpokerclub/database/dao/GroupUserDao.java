@@ -1,5 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -12,10 +13,12 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 
 @Dao
 public interface GroupUserDao {
-    @Insert
+    @Insert(onConflict = REPLACE)
     void insert(GroupUserEntity user);
 
     @Update
@@ -25,8 +28,8 @@ public interface GroupUserDao {
     void delete(GroupUserEntity... users);
 
     @Query("SELECT * FROM user WHERE EXISTS (SELECT userId FROM groupUser WHERE groupId=:groupId)")
-    List<UserEntity> getUsersInGroup(final int groupId);
+    LiveData<List<UserEntity>> getUsersInGroup(final int groupId);
 
     @Query("SELECT * FROM `group` WHERE EXISTS (SELECT groupId FROM groupUser WHERE userId=:userId)")
-    List<GroupEntity> getGroupsForUser(final int userId);
+    LiveData<List<GroupEntity>> getGroupsForUser(final int userId);
 }

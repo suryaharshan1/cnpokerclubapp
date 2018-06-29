@@ -3,12 +3,10 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database.entities;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
-@Entity(tableName = "originalDebt")
+@Entity(tableName = "originalDebt", primaryKeys = {"fromUser", "toUser", "groupId", "currencyCode"})
 public class OriginalDebtEntity {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-
     @ForeignKey(entity = UserEntity.class, parentColumns = {"id"}, childColumns = {"fromUser"})
     private int fromUser;
 
@@ -17,27 +15,18 @@ public class OriginalDebtEntity {
 
     private String amount;
 
+    @NonNull
     private String currencyCode;
 
     @ForeignKey(entity = GroupEntity.class, parentColumns = {"id"}, childColumns = {"groupId"})
     private int groupId;
 
-    public OriginalDebtEntity(int id, int fromUser, int toUser, String amount, String currencyCode, int groupId) {
-        this.id = id;
+    public OriginalDebtEntity(int fromUser, int toUser, String amount, String currencyCode, int groupId) {
         this.fromUser = fromUser;
         this.toUser = toUser;
         this.amount = amount;
         this.currencyCode = currencyCode;
         this.groupId = groupId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public OriginalDebtEntity setId(int id) {
-        this.id = id;
-        return this;
     }
 
     public int getFromUser() {

@@ -15,10 +15,11 @@ import android.widget.TextView;
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Group;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListGroups;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
 
 import java.util.List;
 
-public class GroupListAdapter extends ArrayAdapter<Group> {
+public class GroupListAdapter extends ArrayAdapter<GroupEntity> {
 
     private final LayoutInflater mInflater;
 
@@ -27,15 +28,12 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         mInflater = LayoutInflater.from(context);
     }
 
-    public void setData(ListGroups listGroups, boolean clear) {
+    public void setData(List<GroupEntity> listGroups, boolean clear) {
         if (clear) {
             clear();
         }
         if (listGroups != null) {
-            List<Group> groups = listGroups.getGroups();
-            if (groups != null) {
-                addAll(groups);
-            }
+                addAll(listGroups);
         }
     }
 
@@ -64,7 +62,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         ViewHolder holder = (ViewHolder) view.getTag();
         TextView textView = holder.textView;
 
-        Group group = getItem(position);
+        GroupEntity group = getItem(position);
         SpannableStringBuilder builder = new SpannableStringBuilder(group.getName());
         builder.setSpan(new TextAppearanceSpan(getContext(), android.R.style.TextAppearance_DeviceDefault_Large),
                 0, group.getName().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

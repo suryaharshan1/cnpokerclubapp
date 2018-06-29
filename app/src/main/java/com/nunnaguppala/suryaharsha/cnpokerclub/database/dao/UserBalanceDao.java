@@ -1,5 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -10,9 +11,11 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserBalanceEnt
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 @Dao
 public interface UserBalanceDao {
-    @Insert
+    @Insert(onConflict = REPLACE)
     void insert(UserBalanceEntity user);
 
     @Update
@@ -22,8 +25,11 @@ public interface UserBalanceDao {
     void delete(UserBalanceEntity... users);
 
     @Query("SELECT * FROM userBalance WHERE userId=:userId")
-    List<UserBalanceEntity> getBalancesForUser(final int userId);
+    LiveData<List<UserBalanceEntity>> getBalancesForUser(final int userId);
 
     @Query("SELECT * FROM userBalance")
-    List<UserBalanceEntity> getAllBalances();
+    LiveData<List<UserBalanceEntity>> getAllBalances();
+
+    @Query("SELECT * FROM userBalance WHERE userId=:userId AND currencyCode LIKE '%' || :currencyCode || '%'")
+    LiveData<UserBalanceEntity> getBalanceForUserAndCurrency(final int userId, final String currencyCode);
 }

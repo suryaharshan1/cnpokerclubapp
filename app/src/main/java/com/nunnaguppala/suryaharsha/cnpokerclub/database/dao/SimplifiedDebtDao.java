@@ -1,5 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -10,9 +11,11 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.SimplifiedDebt
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 @Dao
 public interface SimplifiedDebtDao {
-    @Insert
+    @Insert(onConflict = REPLACE)
     void insert(SimplifiedDebtEntity user);
 
     @Update
@@ -22,15 +25,15 @@ public interface SimplifiedDebtDao {
     void delete(SimplifiedDebtEntity... users);
 
     @Query("SELECT * FROM simplifiedDebt WHERE groupId=:groupId")
-    List<SimplifiedDebtEntity> getSimplifiedDebtsFromGroup(final int groupId);
+    LiveData<List<SimplifiedDebtEntity>> getSimplifiedDebtsFromGroup(final int groupId);
 
     @Query("SELECT * FROM simplifiedDebt WHERE fromUser=:userId")
-    List<SimplifiedDebtEntity> getSimplifiedDebtsFromUser(final int userId);
+    LiveData<List<SimplifiedDebtEntity>> getSimplifiedDebtsFromUser(final int userId);
 
     @Query("SELECT * FROM simplifiedDebt WHERE toUser=:userId")
-    List<SimplifiedDebtEntity> getSimplifiedDebtsToUser(final int userId);
+    LiveData<List<SimplifiedDebtEntity>> getSimplifiedDebtsToUser(final int userId);
 
     @Query("SELECT * FROM simplifiedDebt")
-    List<SimplifiedDebtEntity> getAllSimplifiedDebts();
+    LiveData<List<SimplifiedDebtEntity>> getAllSimplifiedDebts();
 }
 

@@ -3,33 +3,22 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database.entities;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
-@Entity(tableName = "userBalance")
+@Entity(tableName = "userBalance", primaryKeys = {"userId", "currencyCode"})
 public class UserBalanceEntity {
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-    
     private double amount;
-    
+
+    @NonNull
     private String currencyCode;
     
     @ForeignKey(entity = UserEntity.class, parentColumns = {"id"}, childColumns = {"userId"})
     private int userId;
 
-    public UserBalanceEntity(int id, double amount, String currencyCode, int userId) {
-        this.id = id;
+    public UserBalanceEntity(double amount, String currencyCode, int userId) {
         this.amount = amount;
         this.currencyCode = currencyCode;
         this.userId = userId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public UserBalanceEntity setId(int id) {
-        this.id = id;
-        return this;
     }
 
     public double getAmount() {

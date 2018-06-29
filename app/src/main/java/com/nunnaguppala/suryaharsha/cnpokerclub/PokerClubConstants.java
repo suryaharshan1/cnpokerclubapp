@@ -15,6 +15,10 @@ public class PokerClubConstants {
 
     public static final String CREDENTIALS_STORE_PREF_FILE = "oauth";
 
+    public static final String APPLICATION_PREF_FILE = "application_prefs";
+
+    public static final String DEFAULT_GROUP_ID_PREF_KEY = "default_group";
+
     private PokerClubConstants() {
     }
 }

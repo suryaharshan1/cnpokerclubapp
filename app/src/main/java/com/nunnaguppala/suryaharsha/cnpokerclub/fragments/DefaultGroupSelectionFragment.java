@@ -1,8 +1,15 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.fragments;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -15,13 +22,25 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.nunnaguppala.suryaharsha.cnpokerclub.PokerClubApplication;
+import com.nunnaguppala.suryaharsha.cnpokerclub.PokerClubConstants;
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.GroupListAdapter;
+import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.Splitwise;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Group;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListGroups;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.GroupsViewModel;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
 import com.nunnaguppala.suryaharsha.cnpokerclub.helpers.Loadable;
 import com.nunnaguppala.suryaharsha.cnpokerclub.loaders.AsyncResourceLoader;
 import com.nunnaguppala.suryaharsha.cnpokerclub.loaders.SplitwiseGroupListLoader;
+import com.wuman.android.auth.oauth2.store.SharedPreferencesCredentialStore;
+
+import java.util.List;
+import java.util.concurrent.Executors;
+
+import javax.inject.Inject;
 
 /**
  * A fragment with a Google +1 button.
@@ -31,24 +50,22 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.loaders.SplitwiseGroupListLoader
  * Use the {@link DefaultGroupSelectionFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DefaultGroupSelectionFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<AsyncResourceLoader.Result<ListGroups>>{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class DefaultGroupSelectionFragment extends Fragment implements LifecycleOwner{
 
     GroupListAdapter groupListAdapter;
-    Loadable<ListGroups> mLoadable;
+
+    @Inject
+    ViewModelFactory mViewModelFactory;
+    GroupsViewModel groupsViewModel;
+
+    @Inject
+    SharedPreferencesCredentialStore sharedPreferencesCredentialStore;
 
     Spinner spinner;
     Button button;
 
     private OnFragmentInteractionListener mListener;
+    private LifecycleRegistry mLifecycleRegistry;
 
     public DefaultGroupSelectionFragment() {
         // Required empty public constructor
@@ -65,10 +82,6 @@ public class DefaultGroupSelectionFragment extends Fragment
     // TODO: Rename and change types and number of parameters
     public static DefaultGroupSelectionFragment newInstance(String param1, String param2) {
         DefaultGroupSelectionFragment fragment = new DefaultGroupSelectionFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -76,18 +89,15 @@ public class DefaultGroupSelectionFragment extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         groupListAdapter = new GroupListAdapter(getActivity().getApplicationContext());
-//        groupListAdapter.setDropDownViewResource(R.layout.group_selector_list_item);
         spinner.setAdapter(groupListAdapter);
-        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        ((PokerClubApplication)(getActivity().getApplication())).getPokerClubComponent().inject(this);
+        mLifecycleRegistry = new LifecycleRegistry(this);
+        mLifecycleRegistry.markState(Lifecycle.State.CREATED);
     }
 
     @Override
@@ -98,34 +108,52 @@ public class DefaultGroupSelectionFragment extends Fragment
         spinner = (Spinner) view.findViewById(R.id.group_selection_spinner);
         button = (Button) view.findViewById(R.id.group_selection_button);
         spinner.setEmptyView(view.findViewById(R.id.group_spinner_loading));
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Group group = (Group) spinner.getSelectedItem();
-                Toast.makeText(getActivity(), group.getName(), Toast.LENGTH_LONG).show();
-            }
 
+        groupsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GroupsViewModel.class);
+        groupsViewModel.init();
+        groupsViewModel.getAllGroups().observe((LifecycleOwner) this, new Observer<List<GroupEntity>>() {
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void onChanged(@Nullable List<GroupEntity> groupEntities) {
+                groupListAdapter.setData(groupEntities, true);
+            }
+        });
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Executors.newSingleThreadExecutor().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences sharedPreferences = getActivity()
+                                .getSharedPreferences(PokerClubConstants.APPLICATION_PREF_FILE,
+                                        Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt(PokerClubConstants.DEFAULT_GROUP_ID_PREF_KEY,
+                                ((GroupEntity)spinner.getSelectedItem()).getId());
+                        editor.apply();
+                    }
+                });
 
             }
         });
-
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mLifecycleRegistry.markState(Lifecycle.State.STARTED);
+    }
+
+    @Override
+    public void onDestroy() {
+        mLifecycleRegistry.markState(Lifecycle.State.DESTROYED);
+        super.onDestroy();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        mLifecycleRegistry.markState(Lifecycle.State.RESUMED);
     }
 
     @Override
@@ -145,25 +173,10 @@ public class DefaultGroupSelectionFragment extends Fragment
         mListener = null;
     }
 
+    @NonNull
     @Override
-    public void onDestroy() {
-        mLoadable.destroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public Loader<AsyncResourceLoader.Result<ListGroups>> onCreateLoader(int id, Bundle args) {
-        return new SplitwiseGroupListLoader(getActivity());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<AsyncResourceLoader.Result<ListGroups>> loader, AsyncResourceLoader.Result<ListGroups> data) {
-        groupListAdapter.setData(data.data, true);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<AsyncResourceLoader.Result<ListGroups>> loader) {
-        groupListAdapter.setData(null, true);
+    public Lifecycle getLifecycle() {
+        return mLifecycleRegistry;
     }
 
     /**
@@ -177,8 +190,7 @@ public class DefaultGroupSelectionFragment extends Fragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onDefaultGroupSelectionFragmentInteraction(int groupId);
     }
 
 }

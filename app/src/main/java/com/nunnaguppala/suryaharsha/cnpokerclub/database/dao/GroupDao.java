@@ -1,5 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -13,10 +14,12 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+
 
 @Dao
 public interface GroupDao {
-    @Insert
+    @Insert(onConflict = REPLACE)
     void insert(GroupEntity user);
 
     @Update
@@ -26,14 +29,19 @@ public interface GroupDao {
     void delete(GroupEntity... users);
 
     @Query("SELECT * FROM `group`")
-    List<GroupEntity> getAllGroups();
+    LiveData<List<GroupEntity>> getAllGroups();
 
     @Query("SELECT * FROM originalDebt WHERE groupId=:groupId")
-    List<OriginalDebtEntity> getOriginalDebtsFromGroup(final int groupId);
+    LiveData<List<OriginalDebtEntity>> getOriginalDebtsFromGroup(final int groupId);
 
     @Query("SELECT * FROM simplifiedDebt WHERE groupId=:groupId")
-    List<SimplifiedDebtEntity> getSimplifiedDebtsFromGroup(final int groupId);
+    LiveData<List<SimplifiedDebtEntity>> getSimplifiedDebtsFromGroup(final int groupId);
 
     @Query("SELECT * FROM user WHERE EXISTS (SELECT userId FROM groupUser WHERE groupId=:groupId)")
-    List<UserEntity> getUsersInGroup(final int groupId);
+    LiveData<List<UserEntity>> getUsersInGroup(final int groupId);
+
+    @Query("SELECT * FROM `group` WHERE id=:groupId")
+    LiveData<GroupEntity> getGroup(final int groupId);
+
+
 }

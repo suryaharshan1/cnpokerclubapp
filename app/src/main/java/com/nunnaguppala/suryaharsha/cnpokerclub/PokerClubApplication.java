@@ -14,7 +14,7 @@ public class PokerClubApplication extends Application{
         pokerClubComponent = createPokerClubComponent();
     }
 
-    PokerClubComponent getPokerClubComponent(){
+    public PokerClubComponent getPokerClubComponent(){
         return pokerClubComponent;
     }
 

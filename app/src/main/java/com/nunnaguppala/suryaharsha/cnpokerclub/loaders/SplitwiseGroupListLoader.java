@@ -1,6 +1,7 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.loaders;
 
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
@@ -34,7 +35,6 @@ public class SplitwiseGroupListLoader extends AsyncResourceLoader<ListGroups> {
     @Override
     public ListGroups loadResourceInBackground() throws Exception {
         Credential credential = oauth.authorize10a(getContext().getString(R.string.app_name)).getResult();
-
         Splitwise splitwise = new Splitwise.Builder(OAuth.HTTP_TRANSPORT, OAuth.JSON_FACTORY, credential).setApplicationName(getContext()
                 .getString(R.string.app_name))
                 .setSplitwiseRequestInitializer(new SplitwiseRequestInitializer())
