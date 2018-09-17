@@ -5,10 +5,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.Toolbar;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.DefaultGroupSelectionFragment;
+import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.UsersFragment;
 
-public class MainActivity extends FragmentActivity implements DefaultGroupSelectionFragment.OnFragmentInteractionListener{
+public class MainActivity extends FragmentActivity implements DefaultGroupSelectionFragment.OnFragmentInteractionListener,
+        UsersFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +26,8 @@ public class MainActivity extends FragmentActivity implements DefaultGroupSelect
             fm.beginTransaction().add(R.id.content_main, list).commit();
         }
         else {
-            //TODO attach fragment which shows the game details
+            UsersFragment usersFragment = UsersFragment.newInstance(defaultGroupID);
+            fm.beginTransaction().add(R.id.content_main, usersFragment).commit();
         }
 
     }
@@ -31,6 +35,13 @@ public class MainActivity extends FragmentActivity implements DefaultGroupSelect
 
     @Override
     public void onDefaultGroupSelectionFragmentInteraction(int groupId) {
-        //TODO attach fragment which shows the game details
+        UsersFragment usersFragment = UsersFragment.newInstance(groupId);
+        getSupportFragmentManager().popBackStack();
+        getSupportFragmentManager().beginTransaction().add(R.id.content_main, usersFragment).commit();
+    }
+
+    @Override
+    public void onUsersFragmentInteraction(Uri uri) {
+
     }
 }

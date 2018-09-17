@@ -25,7 +25,9 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.SplitwiseRequestIn
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Token;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.PokerClubDatabase;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GroupDao;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.ExpenseRepository;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.GroupRepository;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.UserRepository;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
 import com.wuman.android.auth.AuthorizationFlow;
 import com.wuman.android.auth.oauth.OAuthHmacCredential;
@@ -58,7 +60,6 @@ class PokerClubModule {
     }
 
     @Provides
-    @Singleton
     static SharedPreferencesCredentialStore provideSharedPreferencesCredentialStore(Application application){
         return new SharedPreferencesCredentialStore(application,PokerClubConstants.CREDENTIALS_STORE_PREF_FILE, new JacksonFactory());
     }
@@ -83,7 +84,8 @@ class PokerClubModule {
     @Provides
     @Singleton
     static PokerClubDatabase providePokerClubDatabase(Application application) {
-        return Room.databaseBuilder(application, PokerClubDatabase.class, "PokerClubDatabase.db").build();
+        return Room.databaseBuilder(application, PokerClubDatabase.class, "PokerClubDatabase.db")
+                .fallbackToDestructiveMigration().build();
     }
 
     @Provides
@@ -104,7 +106,6 @@ class PokerClubModule {
     }
 
     @Provides
-    @Singleton
     Credential provideCredential(SharedPreferencesCredentialStore sharedPreferencesCredentialStore, Application application, JacksonFactory jacksonFactory) {
         SharedPreferences sharedPreferences = application.getSharedPreferences(PokerClubConstants.CREDENTIALS_STORE_PREF_FILE, application.MODE_PRIVATE);
         String credentialJson = sharedPreferences.getString(application.getString(R.string.app_name), null);
@@ -123,7 +124,6 @@ class PokerClubModule {
     }
 
     @Provides
-    @Singleton
     Splitwise provideSplitwise(Application application, Credential credential) {
         return new Splitwise.Builder(OAuth.HTTP_TRANSPORT, OAuth.JSON_FACTORY, credential).setApplicationName(application
                 .getString(R.string.app_name))
@@ -137,7 +137,20 @@ class PokerClubModule {
     }
 
     @Provides
-    ViewModelProvider.Factory provideViewModelFactory(Context context, GroupRepository groupRepository) {
-        return new ViewModelFactory(context, groupRepository);
+    UserRepository provideUserRepository(Splitwise splitwise, PokerClubDatabase database, Executor executor) {
+        return new UserRepository(database, splitwise, executor);
+    }
+
+    @Provides
+    ExpenseRepository provideExpenseRepository(Splitwise splitwise, PokerClubDatabase database, Executor executor) {
+        return new ExpenseRepository(splitwise, database, executor);
+    }
+
+    @Provides
+    ViewModelProvider.Factory provideViewModelFactory(Context context,
+                                                      GroupRepository groupRepository,
+                                                      UserRepository userRepository,
+                                                      ExpenseRepository expenseRepository) {
+        return new ViewModelFactory(context, groupRepository, userRepository, expenseRepository);
     }
 }

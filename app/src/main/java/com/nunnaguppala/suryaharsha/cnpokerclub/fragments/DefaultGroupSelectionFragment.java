@@ -132,7 +132,7 @@ public class DefaultGroupSelectionFragment extends Fragment implements Lifecycle
                         editor.apply();
                     }
                 });
-
+                mListener.onDefaultGroupSelectionFragmentInteraction(((GroupEntity)spinner.getSelectedItem()).getId());
             }
         });
         return view;

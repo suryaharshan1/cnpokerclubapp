@@ -7,4 +7,7 @@
     <string name="error_occured">Error</string>
     <string name="group_selection_instructions">Choose a default Spiltwise group to add and update your poker expenses.\n You can always comeback and change the default group in the settings tab.</string>
     <string name="group_selection_button_text">Proceed ></string>
+    <string name="user_image_content_description">User Profile Picture</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

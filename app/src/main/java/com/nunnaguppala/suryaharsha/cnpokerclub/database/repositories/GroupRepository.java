@@ -102,34 +102,42 @@ public class GroupRepository {
                             group.getGroupType(),
                             group.getInviteLink()));
 
-                    for(Member member: group.getMembers()) {
-                        userDao.insert(new UserEntity(member.getId(),
-                                member.getFirstName(),
-                                member.getLastName(),
-                                member.getEmail(),
-                                member.getRegistrationStatus(),
-                                member.getPicture().getSmall(),
-                                member.getPicture().getMedium(),
-                                member.getPicture().getLarge()));
-                        for(Balance balance: member.getBalances()) {
-                            userBalanceDao.insert(new UserBalanceEntity(balance.getAmount(),
-                                    balance.getCurrencyCode(), member.getId()));
+                    if(group.getMembers() != null) {
+                        for (Member member : group.getMembers()) {
+                            userDao.insert(new UserEntity(member.getId(),
+                                    member.getFirstName(),
+                                    member.getLastName(),
+                                    member.getEmail(),
+                                    member.getRegistrationStatus(),
+                                    member.getPicture().getSmall(),
+                                    member.getPicture().getMedium(),
+                                    member.getPicture().getLarge()));
+                            if(member.getBalances() != null) {
+                                for (Balance balance : member.getBalances()) {
+                                    userBalanceDao.insert(new UserBalanceEntity(balance.getAmount(),
+                                            balance.getCurrencyCode(), member.getId()));
+                                }
+                            }
+                            groupUserDao.insert(new GroupUserEntity(member.getId(), group.getId()));
                         }
-                        groupUserDao.insert(new GroupUserEntity(member.getId(), group.getId()));
                     }
-                    for(OriginalDebt originalDebt: group.getOriginalDebts()){
-                        originalDebtDao.insert(new OriginalDebtEntity(originalDebt.getFrom(),
-                                originalDebt.getTo(),
-                                originalDebt.getAmount(),
-                                originalDebt.getCurrencyCode(),
-                                group.getId()));
+                    if(group.getOriginalDebts() != null) {
+                        for (OriginalDebt originalDebt : group.getOriginalDebts()) {
+                            originalDebtDao.insert(new OriginalDebtEntity(originalDebt.getFrom(),
+                                    originalDebt.getTo(),
+                                    originalDebt.getAmount(),
+                                    originalDebt.getCurrencyCode(),
+                                    group.getId()));
+                        }
                     }
-                    for(SimplifiedDebt simplifiedDebt: group.getSimplifiedDebts()){
-                        simplifiedDebtDao.insert(new SimplifiedDebtEntity(simplifiedDebt.getFrom(),
-                                simplifiedDebt.getFrom(),
-                                simplifiedDebt.getAmount(),
-                                simplifiedDebt.getCurrencyCode(),
-                                group.getId()));
+                    if(group.getSimplifiedDebts() != null) {
+                        for (SimplifiedDebt simplifiedDebt : group.getSimplifiedDebts()) {
+                            simplifiedDebtDao.insert(new SimplifiedDebtEntity(simplifiedDebt.getFrom(),
+                                    simplifiedDebt.getFrom(),
+                                    simplifiedDebt.getAmount(),
+                                    simplifiedDebt.getCurrencyCode(),
+                                    group.getId()));
+                        }
                     }
                 }
             }

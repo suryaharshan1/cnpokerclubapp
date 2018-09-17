@@ -37,7 +37,7 @@ public interface GroupDao {
     @Query("SELECT * FROM simplifiedDebt WHERE groupId=:groupId")
     LiveData<List<SimplifiedDebtEntity>> getSimplifiedDebtsFromGroup(final int groupId);
 
-    @Query("SELECT * FROM user WHERE EXISTS (SELECT userId FROM groupUser WHERE groupId=:groupId)")
+    @Query("SELECT * FROM user WHERE id IN (SELECT userId FROM groupUser WHERE groupId=:groupId)")
     LiveData<List<UserEntity>> getUsersInGroup(final int groupId);
 
     @Query("SELECT * FROM `group` WHERE id=:groupId")

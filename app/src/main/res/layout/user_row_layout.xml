@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constrainedWidth="true"
+    app:layout_constrainedHeight="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:layout_marginTop="@dimen/fab_margin"
+    android:layout_marginLeft="@dimen/fab_margin"
+    android:layout_marginRight="@dimen/fab_margin">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/fab_margin"
+        android:elevation="@dimen/cardview_default_elevation"
+        app:cardCornerRadius="@dimen/cardview_default_radius"
+        app:cardUseCompatPadding="true"
+        app:contentPadding="@dimen/fab_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constrainedHeight="true"
+        android:id="@+id/user_row_card_view"
+        >
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constrainedWidth="true"
+                app:layout_constrainedHeight="true"
+                android:text="Total Games: "
+                android:id="@+id/user_total_games_label"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/user_name"/>
+
+            <TextView
+                android:id="@+id/user_total_games"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constrainedWidth="true"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintTop_toBottomOf="@+id/user_name"
+                app:layout_constraintLeft_toRightOf="@+id/user_total_games_label"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constrainedWidth="true"
+                app:layout_constrainedHeight="true"
+                android:text="Total Winnings: "
+                android:id="@+id/user_total_debt_label"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@+id/user_total_games_label"/>
+
+            <TextView
+                android:id="@+id/user_total_debt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintTop_toBottomOf="@+id/user_total_games"
+                app:layout_constraintLeft_toRightOf="@+id/user_total_debt_label"/>
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/user_winnings_graph"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:layout_constrainedWidth="true"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintTop_toBottomOf="@+id/user_total_debt"
+                />
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/user_winnings_graph"
+                >
+
+                <View
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_green_light"
+                    android:id="@+id/user_winnings_graph_green_icon"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cumulative Winnings"
+                    app:layout_constraintLeft_toRightOf="@+id/user_winnings_graph_green_icon"
+                    android:id="@+id/user_winnings_graph_green_label" />
+
+                <View
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_blue_dark"
+                    android:id="@+id/user_winnings_graph_blue_icon"
+                    app:layout_constraintLeft_toRightOf="@+id/user_winnings_graph_green_label"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Game Winnings"
+                    app:layout_constraintLeft_toRightOf="@+id/user_winnings_graph_blue_icon"
+                    android:id="@+id/user_winnings_graph_blue_label"/>
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>
