@@ -1,8 +1,11 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.adapters;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.stream.IntStream;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
     private List<ExpenseUserShareAndDetails> usersShareAndDetails = Collections.<ExpenseUserShareAndDetails>emptyList();
@@ -54,22 +58,30 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
         return new ViewHolder(view);
     }
 
+    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ExpenseUserShareAndDetails userAndDetails = usersShareAndDetails.get(position);
         holder.userName.setText(userAndDetails.getUser().getFirstName() + " " + userAndDetails.getUser().getLastName());
         double totalDebtOfUser = 0.0;
-        LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<DataPoint>();
-        LineGraphSeries<DataPoint> cummGraphSeries = new LineGraphSeries<DataPoint>();
+        final LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<DataPoint>();
+        final LineGraphSeries<DataPoint> cummGraphSeries = new LineGraphSeries<DataPoint>();
         cummGraphSeries.setColor(Color.GREEN);
         cummGraphSeries.setTitle("Cumulative Winnings");
         lineGraphSeries.setTitle("Game Winnings");
         lineGraphSeries.setColor(Color.BLUE);
         int counter = 0;
+        IntStream.range(0, userAndDetails.getShares().size()).forEach(
+                index -> {
+                    lineGraphSeries.appendData(new DataPoint(index, Double.valueOf(userAndDetails.getShares().get(index).getNetBalance())),
+                            false, 500);
+                }
+        );
         for(ExpenseUserShareEntity share : userAndDetails.getShares()){
             totalDebtOfUser += Double.valueOf(share.getNetBalance());
-            lineGraphSeries.appendData(new DataPoint(counter, Double.valueOf(share.getNetBalance())),
-                    false, 500);
+//            lineGraphSeries.appendData(new DataPoint(counter, Double.valueOf(share.getNetBalance())),
+//                    false, 500);
             cummGraphSeries.appendData(new DataPoint(counter, totalDebtOfUser), false, 500);
             counter++;
         }
