@@ -7,16 +7,28 @@
     <application
         android:name=".PokerClubApplication"
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:fullBackupContent="true"
-        >
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ItemListActivity"
+            android:label="@string/title_item_list"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ItemDetailActivity"
+            android:label="@string/title_item_detail"
+            android:parentActivityName=".ItemListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nunnaguppala.suryaharsha.cnpokerclub.ItemListActivity" />
+        </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

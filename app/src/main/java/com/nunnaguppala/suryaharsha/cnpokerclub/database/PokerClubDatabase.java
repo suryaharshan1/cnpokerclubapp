@@ -9,6 +9,9 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseCategoryDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseRepaymentDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseUserShareDao;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GameBuyInDao;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GameCashOutDao;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GameDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GroupDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GroupUserDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.OriginalDebtDao;
@@ -19,6 +22,9 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseCategor
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseRepaymentEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseUserShareEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupUserEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.OriginalDebtEntity;
@@ -30,7 +36,9 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
         GroupUserEntity.class, OriginalDebtEntity.class, SimplifiedDebtEntity.class,
         UserBalanceEntity.class, UserEntity.class,
         ExpenseEntity.class, ExpenseRepaymentEntity.class,
-        ExpenseCategoryEntity.class, ExpenseUserShareEntity.class}, version = 2, exportSchema = false)
+        ExpenseCategoryEntity.class, ExpenseUserShareEntity.class,
+        GameEntity.class, GameBuyInEntity.class, GameCashOutEntity.class},
+        version = 4, exportSchema = false)
 public abstract class PokerClubDatabase extends RoomDatabase{
     public abstract GroupDao getGroupDao();
     public abstract UserDao getUserDao();
@@ -42,4 +50,7 @@ public abstract class PokerClubDatabase extends RoomDatabase{
     public abstract ExpenseCategoryDao getExpenseCategoryDao();
     public abstract ExpenseRepaymentDao getExpenseRepaymentDao();
     public abstract ExpenseUserShareDao getExpenseUserShareDao();
+    public abstract GameDao getGameDao();
+    public abstract GameBuyInDao getGameBuyInDao();
+    public abstract GameCashOutDao getGameCashOutDao();
 }

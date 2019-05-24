@@ -26,6 +26,7 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Token;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.PokerClubDatabase;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GroupDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.ExpenseRepository;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.GameRepository;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.GroupRepository;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.UserRepository;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
@@ -147,10 +148,17 @@ class PokerClubModule {
     }
 
     @Provides
+    GameRepository provideGameRepository(PokerClubDatabase database, Executor executor){
+        return new GameRepository(database, executor);
+    }
+
+    @Provides
     ViewModelProvider.Factory provideViewModelFactory(Context context,
                                                       GroupRepository groupRepository,
                                                       UserRepository userRepository,
-                                                      ExpenseRepository expenseRepository) {
-        return new ViewModelFactory(context, groupRepository, userRepository, expenseRepository);
+                                                      ExpenseRepository expenseRepository,
+                                                      GameRepository gameRepository) {
+        return new ViewModelFactory(context, groupRepository, userRepository, expenseRepository,
+                gameRepository);
     }
 }

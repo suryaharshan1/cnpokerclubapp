@@ -51,7 +51,7 @@ public class OAuth {
                                     String temporaryTokenRequestUrl) {
         Preconditions.checkNotNull(client.getClientId());
         boolean fullScreen = context.getSharedPreferences("Preference", 0)
-                .getBoolean("auth_mode", false);
+                .getBoolean("auth_mode", true);
         // setup credential store
         SharedPreferencesCredentialStore credentialStore =
                 new SharedPreferencesCredentialStore(context,

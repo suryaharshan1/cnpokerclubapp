@@ -10,4 +10,7 @@
     <string name="user_image_content_description">User Profile Picture</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_item_list">Poker Club Games</string>
+    <string name="title_item_detail">Poker Session Details</string>
+    <string name="title_action_list_games">List Games</string>
 </resources>

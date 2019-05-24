@@ -19,6 +19,8 @@ public class PokerClubConstants {
 
     public static final String DEFAULT_GROUP_ID_PREF_KEY = "default_group";
 
+    public static final String IS_LOGGED_IN_KEY = "is_logged_in";
+
     private PokerClubConstants() {
     }
 }
