@@ -5,6 +5,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.GameRepository;
 
 import java.util.List;
@@ -35,7 +37,39 @@ public class GameViewModel extends ViewModel {
         return gameRepository.createNewGame(gameEntity);
     }
 
-    public LiveData<List<GameEntity>> getGameInfo(int gameId){
+    public LiveData<GameEntity> getGameInfo(int gameId){
         return gameRepository.getGameInfo(gameId);
+    }
+
+    public LiveData<List<UserEntity>> getNonPlayerListForGame(int gameId, int groupId){
+        return gameRepository.getNonPlayerListForGame(gameId, groupId);
+    }
+
+    public LiveData<List<UserEntity>> getPlayerListForGame(long gameId) {
+        return gameRepository.getPlayerListForGame(gameId);
+    }
+
+    public void onBoardUsersToGame(int gameId, List<Integer> userIds) {
+        gameRepository.onBoardUsersToGame(gameId, userIds);
+    }
+
+    public LiveData<List<UserTotalBuyIn>> getUsersBuyInForGame(long gameId) {
+        return gameRepository.getUsersBuyInForGame(gameId);
+    }
+
+    public void addBuyInForUserInGame(int gameId, int userId, int buyIn) {
+        gameRepository.addBuyInForUserInGame(gameId, userId, buyIn);
+    }
+
+    public void addCashOutForUserInGame(int gameId, int userId, int cashOut) {
+        gameRepository.addCashOutForUserInGame(gameId, userId, cashOut);
+    }
+
+    public LiveData<UserEntity> getCashierForGame(long gameId) {
+        return gameRepository.getCashierForGame(gameId);
+    }
+
+    public void setCashierForGame(long cashierUserId, long gameId) {
+        gameRepository.setCashierForGame(cashierUserId, gameId);
     }
 }

@@ -5,6 +5,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.Update;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseUserShareEntity;
@@ -34,6 +35,7 @@ public interface ExpenseUserShareDao {
     @Query("SELECT * FROM expenseUserShare WHERE userId=:userId")
     LiveData<List<ExpenseUserShareEntity>> getAllExpenseSharesForUser(int userId);
 
+    @Transaction
     @Query("SELECT * FROM user WHERE id IN (SELECT userId FROM groupUser WHERE groupId=:groupId)")
     LiveData<List<ExpenseUserShareAndDetails>> getAllExpenseSharesForUsersInGroup(int groupId);
 }

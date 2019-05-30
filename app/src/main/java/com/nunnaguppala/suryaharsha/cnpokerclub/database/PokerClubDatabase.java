@@ -38,7 +38,7 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
         ExpenseEntity.class, ExpenseRepaymentEntity.class,
         ExpenseCategoryEntity.class, ExpenseUserShareEntity.class,
         GameEntity.class, GameBuyInEntity.class, GameCashOutEntity.class},
-        version = 4, exportSchema = false)
+        version = 6, exportSchema = false)
 public abstract class PokerClubDatabase extends RoomDatabase{
     public abstract GroupDao getGroupDao();
     public abstract UserDao getUserDao();

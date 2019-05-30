@@ -13,4 +13,5 @@
     <string name="title_item_list">Poker Club Games</string>
     <string name="title_item_detail">Poker Session Details</string>
     <string name="title_action_list_games">List Games</string>
+    <string name="title_add_users">Select Players to start</string>
 </resources>

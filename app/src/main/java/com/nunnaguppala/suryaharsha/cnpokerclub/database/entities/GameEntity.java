@@ -1,5 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.entities;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
@@ -9,20 +10,27 @@ import android.arch.persistence.room.TypeConverters;
 @Entity(tableName = "game")
 public class GameEntity {
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "game_id")
     private int id;
 
+    @ColumnInfo(name = "game_name")
     private String name;
 
+    @ColumnInfo(name = "game_createdAt")
     private String createdAt;
 
+    @ColumnInfo(name = "game_updatedAt")
     private String updatedAt;
 
     @ForeignKey(entity = UserEntity.class, parentColumns = {"id"}, childColumns = {"cashierUserId"})
+    @ColumnInfo(name = "game_cashierUserId")
     private Integer cashierUserId;
 
+    @ColumnInfo(name = "game_cashierCut")
     private int cashierCut;
 
     @TypeConverters(StatusConverter.class)
+    @ColumnInfo(name = "game_status")
     private Status status;
 
     public enum Status {

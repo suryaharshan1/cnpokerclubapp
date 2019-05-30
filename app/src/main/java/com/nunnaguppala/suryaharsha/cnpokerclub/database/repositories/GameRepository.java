@@ -1,6 +1,10 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories;
 
 import android.arch.lifecycle.LiveData;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.Calendar;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.PokerClubDatabase;
@@ -8,7 +12,10 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntit
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -45,7 +52,7 @@ public class GameRepository {
         return database.getGameDao().getUsersInGame(gameId);
     }
 
-    public LiveData<List<GameEntity>> getGameInfo(int gameId){
+    public LiveData<GameEntity> getGameInfo(int gameId){
         return database.getGameDao().getGameInfo(gameId);
     }
 
@@ -67,5 +74,75 @@ public class GameRepository {
             es.shutdown();
         }
         return id;
+    }
+
+    public void onBoardUsersToGame(int gameId, List<Integer> userIds) {
+        executor.execute(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                ArrayList<GameBuyInEntity> gameBuyInEntities = new ArrayList<>();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy,HH:mm");
+                String currentTime = simpleDateFormat.format(Calendar.getInstance().getTime());
+                for(Integer userId : userIds) {
+                    gameBuyInEntities.add(new GameBuyInEntity(
+                            gameId,
+                            userId,
+                            0,
+                            currentTime
+                    ));
+                }
+                database.getGameBuyInDao().insert(gameBuyInEntities.toArray(new GameBuyInEntity[gameBuyInEntities.size()]));
+            }
+        });
+    }
+
+    public LiveData<List<UserEntity>> getNonPlayerListForGame(int gameId, int groupId){
+        return database.getGameDao().getNonPlayerListForGame(gameId, groupId);
+    }
+
+    public LiveData<List<UserEntity>> getPlayerListForGame(long gameId) {
+        return database.getGameDao().getPlayerListForGame(gameId);
+    }
+
+    public LiveData<List<UserTotalBuyIn>> getUsersBuyInForGame(long gameId) {
+        return database.getGameDao().getUsersBuyInForGame(gameId);
+    }
+
+    public LiveData<UserEntity> getCashierForGame(long gameId) {
+        return database.getGameDao().getCashierForGame(gameId);
+    }
+
+    public void setCashierForGame(long cashierUserId, long gameId) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                database.getGameDao().setCashierForGame(cashierUserId, gameId);
+            }
+        });
+    }
+
+    public void addBuyInForUserInGame(int gameId, int userId, int buyIn) {
+        executor.execute(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy,HH:mm");
+                String currentTime = simpleDateFormat.format(Calendar.getInstance().getTime());
+                database.getGameBuyInDao().insert(new GameBuyInEntity(gameId, userId, buyIn, currentTime));
+            }
+        });
+    }
+
+    public void addCashOutForUserInGame(int gameId, int userId, int cashOut) {
+        executor.execute(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void run() {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy,HH:mm");
+                String currentTime = simpleDateFormat.format(Calendar.getInstance().getTime());
+                database.getGameCashOutDao().insert(new GameCashOutEntity(gameId, userId, cashOut, currentTime));
+            }
+        });
     }
 }

@@ -18,6 +18,9 @@ public interface GameBuyInDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(GameBuyInEntity gameBuyInEntity);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(GameBuyInEntity... gameBuyInEntities);
+
     @Update
     void update(GameBuyInEntity... gameBuyInEntities);
 
@@ -32,7 +35,4 @@ public interface GameBuyInDao {
 
     @Query("select * from gameBuyIn where userId=:userId")
     LiveData<List<GameBuyInEntity>> getUserBuyInInfo(int userId);
-
-    @Query("select userId, gameId, SUM(buyIn) as totalBuyIn from gameBuyIn where userId=:userId and gameId=:gameId")
-    LiveData<UserTotalBuyIn> getUserTotalBuyInInfoForGame(int userId, int gameId);
 }
