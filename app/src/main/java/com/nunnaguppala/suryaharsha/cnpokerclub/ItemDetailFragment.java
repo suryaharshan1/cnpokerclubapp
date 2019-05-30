@@ -8,7 +8,6 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
-import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -29,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.CashierAdapter;
 import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.GameUsersAdapter;
@@ -103,6 +101,40 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
                     null, 0, GameEntity.Status.ACTIVE);
             gameId = gameViewModel.createNewGame(gameEntity);
         }
+//        gameViewModel.getGameWithCashierInfo((int)gameId).observe(this, new Observer<GameInfo>() {
+//            @Override
+//            public void onChanged(@Nullable GameInfo gameInfo) {
+//                if(gameInfo == null){
+//                    return;
+//                }
+//                gameEntity = gameInfo.getGame();
+//                Log.d(ItemDetailFragment.class.getSimpleName(), String.valueOf(gameId));
+//                Log.d(ItemDetailFragment.class.getSimpleName(), String.valueOf(gameEntity.getId()));
+//                Activity activity = getActivity();
+//                CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+//                if (appBarLayout != null) {
+//                    appBarLayout.setTitle(gameEntity.getName());
+//                }
+//
+//                if (cashierTitle != null) {
+//                    Log.d(ItemDetailFragment.class.getSimpleName(), "CashierTitle is Not Null");
+//                    UserEntity userEntity = gameInfo.getCashier();
+//                    if(userEntity == null){
+//                        Log.d(ItemDetailFragment.class.getSimpleName(), "UserEntity is Null");
+//                        SpannableString content = new SpannableString("Select Cashier");
+//                        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+//                        cashierTitle.setText(content);
+//                    } else {
+//                        SpannableString content = new SpannableString("Cashier: " + userEntity.getFirstName());
+//                        content.setSpan(new UnderlineSpan(), 0,
+//                                content.length() - userEntity.getFirstName().length(), 0);
+//                        cashierTitle.setText(content);
+//                    }
+//                } else {
+//                    Log.d(ItemDetailFragment.class.getSimpleName(), "CashierTitle is Null");
+//                }
+//            }
+//        });
         gameViewModel.getGameInfo((int)gameId).observe(this, new Observer<GameEntity>() {
             @Override
             public void onChanged(@Nullable GameEntity game) {
@@ -116,14 +148,26 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
                 CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
                 if (appBarLayout != null) {
                     appBarLayout.setTitle(gameEntity.getName());
-
                 }
-
+                if (cashierTitle != null) {
+                    Log.d(ItemDetailFragment.class.getSimpleName(), "CashierTitle is Not Null");
+                    UserEntity userEntity = game.getCashier();
+                    if(userEntity == null){
+                        Log.d(ItemDetailFragment.class.getSimpleName(), "UserEntity is Null");
+                        SpannableString content = new SpannableString("Select Cashier");
+                        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                        cashierTitle.setText(content);
+                    } else {
+                        SpannableString content = new SpannableString("Cashier: " + userEntity.getFirstName());
+                        content.setSpan(new UnderlineSpan(), content.length() - userEntity.getFirstName().length(),
+                                content.length(), 0);
+                        cashierTitle.setText(content);
+                    }
+                } else {
+                    Log.d(ItemDetailFragment.class.getSimpleName(), "CashierTitle is Null");
+                }
             }
         });
-
-
-
     }
 
     @Override
@@ -158,21 +202,12 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
             }
         });
         cashierTitle = (TextView) rootView.findViewById(R.id.cashier_title);
-        gameViewModel.getCashierForGame(gameId).observe(this, new Observer<UserEntity>() {
-            @Override
-            public void onChanged(@Nullable UserEntity userEntity) {
-                if(userEntity == null){
-                    SpannableString content = new SpannableString("Select Cashier");
-                    content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-                    cashierTitle.setText(content);
-                } else {
-                    SpannableString content = new SpannableString("Cashier: " + userEntity.getFirstName());
-                    content.setSpan(new UnderlineSpan(), 0,
-                            content.length() - userEntity.getFirstName().length(), 0);
-                    cashierTitle.setText(content);
-                }
-            }
-        });
+//        gameViewModel.getCashierForGame(gameId).observe(this, new Observer<UserEntity>() {
+//            @Override
+//            public void onChanged(@Nullable UserEntity userEntity) {
+//
+//            }
+//        });
         cashierTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,7 +223,7 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                           UserEntity user = cashierAdapter.getItem(which);
-                          gameViewModel.setCashierForGame(user.getId(), gameId);
+                          gameViewModel.setCashierForGame(gameEntity, user.getId());
                     }
                 });
                 dialogBuilder.show();

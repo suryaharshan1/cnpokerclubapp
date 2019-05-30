@@ -1,8 +1,10 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels;
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
@@ -38,7 +40,25 @@ public class GameViewModel extends ViewModel {
     }
 
     public LiveData<GameEntity> getGameInfo(int gameId){
-        return gameRepository.getGameInfo(gameId);
+        LiveData<GameEntity> gameEntityLiveData = gameRepository.getGameInfo(gameId);
+        gameEntityLiveData = Transformations.switchMap(gameEntityLiveData, new Function<GameEntity, LiveData<GameEntity>>() {
+            @Override
+            public LiveData<GameEntity> apply(GameEntity inputGame) {
+                LiveData<UserEntity> cashier = gameRepository.getCashierForGame(gameId);
+                return Transformations.map(cashier, new Function<UserEntity, GameEntity>() {
+                    @Override
+                    public GameEntity apply(UserEntity inputCashier) {
+                        if(inputCashier != null)
+                            Log.d(GameViewModel.class.getSimpleName(), inputCashier.getFirstName());
+                        else
+                            Log.d(GameViewModel.class.getSimpleName(), "InputCashier is null");
+                        inputGame.setCashier(inputCashier);
+                        return inputGame;
+                    }
+                });
+            }
+        });
+        return gameEntityLiveData;
     }
 
     public LiveData<List<UserEntity>> getNonPlayerListForGame(int gameId, int groupId){
@@ -71,5 +91,9 @@ public class GameViewModel extends ViewModel {
 
     public void setCashierForGame(long cashierUserId, long gameId) {
         gameRepository.setCashierForGame(cashierUserId, gameId);
+    }
+
+    public void setCashierForGame(GameEntity gameEntity, long cashierUserId){
+        gameRepository.setCashierForGame(gameEntity, cashierUserId);
     }
 }

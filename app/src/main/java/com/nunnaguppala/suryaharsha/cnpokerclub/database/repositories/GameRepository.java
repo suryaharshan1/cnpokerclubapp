@@ -15,7 +15,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -118,6 +117,16 @@ public class GameRepository {
             @Override
             public void run() {
                 database.getGameDao().setCashierForGame(cashierUserId, gameId);
+            }
+        });
+    }
+
+    public void setCashierForGame(GameEntity gameEntity, long cashierUserId) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                gameEntity.setCashierUserId((int)cashierUserId);
+                database.getGameDao().insert(gameEntity);
             }
         });
     }

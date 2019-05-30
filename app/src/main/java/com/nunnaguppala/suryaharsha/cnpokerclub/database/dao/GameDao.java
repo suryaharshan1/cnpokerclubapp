@@ -6,13 +6,12 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.RoomWarnings;
 import android.arch.persistence.room.Transaction;
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
-import android.arch.persistence.room.util.StringUtil;
 
-import com.google.api.client.util.StringUtils;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
@@ -20,7 +19,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,13 +55,15 @@ public interface GameDao {
     @Query("select * from user where id in (select distinct userId from gameBuyIn where gameId=:gameId)")
     LiveData<List<UserEntity>> getPlayerListForGame(long gameId);
 
-    @Query("select *, game_cashierUserId from user inner join game on game_cashierUserId=game_id where game_id=:gameId")
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Query("select * from game inner join user on game_cashierUserId=id where game_id=:gameId")
     LiveData<UserEntity> getCashierForGame(long gameId);
 
     @Query("update game set game_cashierUserId=:cashierUserId where game_id=:gameId")
     void setCashierForGame(long cashierUserId, long gameId);
 
     @Transaction
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("select *, u.totalBuyIn as totalBuyIn, GROUP_CONCAT(t.gameBuyInEntity, '^^') as gameBuyInEntities from (select user.*, game.*, (gameBuyIn.buyInID ||  '^_' || gameBuyIn.gameId || '^_' || gameBuyIn.userId || '^_' || gameBuyIn.buyIn || '^_' || gameBuyIn.buyInTime) as gameBuyInEntity from gameBuyIn inner join game on game_id=gameId inner join user on userId=id  where gameId=:gameId) as t, (select userId, SUM(buyIn) as totalBuyIn from gameBuyIn where gameId=:gameId group by userId) as u where t.id=u.userId group by t.id")
     LiveData<List<UserTotalBuyIn>> getUsersBuyInForGame(long gameId);
 

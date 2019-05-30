@@ -3,6 +3,7 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
@@ -32,6 +33,17 @@ public class GameEntity {
     @TypeConverters(StatusConverter.class)
     @ColumnInfo(name = "game_status")
     private Status status;
+
+    @Ignore
+    private UserEntity cashier;
+
+    public UserEntity getCashier() {
+        return cashier;
+    }
+
+    public void setCashier(UserEntity cashier) {
+        this.cashier = cashier;
+    }
 
     public enum Status {
         ACTIVE(0),
