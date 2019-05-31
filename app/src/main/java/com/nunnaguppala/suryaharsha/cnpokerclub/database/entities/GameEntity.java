@@ -45,6 +45,12 @@ public class GameEntity {
         this.cashier = cashier;
     }
 
+    @Ignore
+    private Integer totalBuyIn;
+
+    @Ignore
+    private Integer totalCashOut;
+
     public enum Status {
         ACTIVE(0),
         COMPLETED(1),
@@ -148,5 +154,21 @@ public class GameEntity {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Integer getTotalBuyIn() {
+        return totalBuyIn;
+    }
+
+    public void setTotalBuyIn(Integer totalBuyIn) {
+        this.totalBuyIn = totalBuyIn;
+    }
+
+    public Integer getTotalCashOut() {
+        return totalCashOut;
+    }
+
+    public void setTotalCashOut(Integer totalCashOut) {
+        this.totalCashOut = totalCashOut;
     }
 }

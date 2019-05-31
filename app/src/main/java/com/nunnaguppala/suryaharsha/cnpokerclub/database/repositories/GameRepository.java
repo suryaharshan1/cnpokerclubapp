@@ -131,6 +131,16 @@ public class GameRepository {
         });
     }
 
+    public void setCashierCutForGame(GameEntity gameEntity, int cashierCut){
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                gameEntity.setCashierCut(cashierCut);
+                database.getGameDao().insert(gameEntity);
+            }
+        });
+    }
+
     public void addBuyInForUserInGame(int gameId, int userId, int buyIn) {
         executor.execute(new Runnable() {
             @RequiresApi(api = Build.VERSION_CODES.N)

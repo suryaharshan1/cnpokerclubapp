@@ -49,6 +49,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/game_user_card_name"
                 />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/game_user_card_cash_out"
+                app:layout_constraintLeft_toRightOf="@+id/game_user_card_buy_in"
+                app:layout_constraintBottom_toBottomOf="@+id/game_user_card_buy_in"/>
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

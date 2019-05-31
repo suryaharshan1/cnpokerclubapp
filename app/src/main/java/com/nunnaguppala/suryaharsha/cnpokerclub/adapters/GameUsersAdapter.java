@@ -23,8 +23,11 @@ import android.widget.Toast;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.GameViewModel;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,11 +46,13 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
     private GameViewModel gameViewModel;
 
     private SparseBooleanArray buyInUIMap;
+    private SparseBooleanArray cashOutUIMap;
 
     public GameUsersAdapter(Context context, GameViewModel gameViewModel) {
         this.context = context;
         this.gameViewModel = gameViewModel;
         this.buyInUIMap = new SparseBooleanArray();
+        this.cashOutUIMap = new SparseBooleanArray();
     }
 
     @Override
@@ -61,17 +66,28 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         UserTotalBuyIn userTotalBuyIn = userBuyIn.get(position);
         holder.userName.setText(String.valueOf(userTotalBuyIn.getUser().getFirstName()));
-        holder.userBuyInInfo.setText(String.valueOf(userTotalBuyIn.getTotalBuyIn()));
+        holder.userBuyInInfo.setText("Total BuyIn: " + String.valueOf(userTotalBuyIn.getTotalBuyIn()));
+        holder.userCashOutInfo.setText("Total CashOut: " + String.valueOf(userTotalBuyIn.getTotalCashOut()));
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         for(GameBuyInEntity gameBuyInEntity : userTotalBuyIn.getGameBuyInEntities()){
             if(!buyInUIMap.get(gameBuyInEntity.getBuyInID(), false) && gameBuyInEntity.getBuyIn() != 0){
                 String buyInItem = gameBuyInEntity.getBuyInTime() + " BuyIn: " + gameBuyInEntity.getBuyIn();
                 Log.d(GameUsersAdapter.class.getSimpleName(), buyInItem);
-                LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View v = layoutInflater.inflate(R.layout.user_buyin_item, null);
                 TextView textView = (TextView) v.findViewById(R.id.user_buyin_item_data);
                 textView.setText(buyInItem);
                 holder.userBuyInContainer.addView(v);
                 buyInUIMap.put(gameBuyInEntity.getBuyInID(), true);
+            }
+        }
+        for(GameCashOutEntity gameCashOutEntity : userTotalBuyIn.getGameCashOutEntities()){
+            if(!cashOutUIMap.get(gameCashOutEntity.getCashOutID(), false) && gameCashOutEntity.getCashOut() != 0){
+                String cashOutItem = gameCashOutEntity.getCashOutTime() + " CashOut: " + gameCashOutEntity.getCashOut();
+                View v = layoutInflater.inflate(R.layout.user_buyin_item, null);
+                TextView textView = (TextView) v.findViewById(R.id.user_buyin_item_data);
+                textView.setText(cashOutItem);
+                holder.userBuyInContainer.addView(v);
+                cashOutUIMap.put(gameCashOutEntity.getCashOutID(), true);
             }
         }
         holder.userBuyIn.setTag(userTotalBuyIn);
@@ -130,7 +146,7 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView userName, userBuyInInfo;
+        public TextView userName, userBuyInInfo, userCashOutInfo;
         public LinearLayout userBuyInContainer;
         public Button userBuyIn, userCashOut;
 
@@ -141,6 +157,7 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
             userBuyInContainer = (LinearLayout) itemView.findViewById(R.id.user_buyin_info_container);
             userBuyIn = (Button) itemView.findViewById(R.id.user_new_buyin);
             userCashOut = (Button) itemView.findViewById(R.id.user_cash_out);
+            userCashOutInfo = (TextView) itemView.findViewById(R.id.game_user_card_cash_out);
         }
     }
 }

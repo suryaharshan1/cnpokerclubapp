@@ -16,21 +16,37 @@ android:padding="16dp">
         android:focusable="true"
         />
 
-    <!--<android.support.v7.widget.AppCompatSpinner-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/game_cashier_spinner"-->
-        <!--android:layout_toRightOf="@+id/cashier_title"-->
-        <!--android:layout_alignBottom="@id/cashier_title"-->
-        <!--&gt;-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cashier_cut"
+        android:padding="16dp"
+        android:layout_toRightOf="@id/cashier_title"
+        android:clickable="true"
+        android:focusable="true"/>
 
-    <!--</android.support.v7.widget.AppCompatSpinner>-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_total_buyIn"
+        android:padding="16dp"
+        android:layout_below="@id/cashier_title"
+        android:layout_alignLeft="@id/cashier_title"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_total_cashOut"
+        android:padding="16dp"
+        android:layout_toRightOf="@+id/game_total_buyIn"
+        android:layout_alignTop="@+id/game_total_buyIn"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/game_users_list"
         android:scrollbars="vertical"
-        android:layout_below="@id/cashier_title"/>
+        android:layout_below="@id/game_total_buyIn"/>
 
 </RelativeLayout>

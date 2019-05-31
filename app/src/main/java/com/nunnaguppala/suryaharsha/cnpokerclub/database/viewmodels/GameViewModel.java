@@ -96,4 +96,8 @@ public class GameViewModel extends ViewModel {
     public void setCashierForGame(GameEntity gameEntity, long cashierUserId){
         gameRepository.setCashierForGame(gameEntity, cashierUserId);
     }
+
+    public void setCashierCutForGame(GameEntity gameEntity, int cashierCut){
+        gameRepository.setCashierCutForGame(gameEntity, cashierCut);
+    }
 }

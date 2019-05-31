@@ -4,6 +4,7 @@ import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Relation;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 
@@ -20,6 +21,10 @@ public class UserTotalBuyIn {
     public List<GameBuyInEntity> gameBuyInEntities;
 
     public int totalBuyIn;
+
+    public List<GameCashOutEntity> gameCashOutEntities;
+
+    public int totalCashOut;
 
     public GameEntity getGame() {
         return game;
@@ -51,5 +56,21 @@ public class UserTotalBuyIn {
 
     public void setTotalBuyIn(int totalBuyIn) {
         this.totalBuyIn = totalBuyIn;
+    }
+
+    public List<GameCashOutEntity> getGameCashOutEntities() {
+        return gameCashOutEntities;
+    }
+
+    public void setGameCashOutEntities(List<GameCashOutEntity> gameCashOutEntities) {
+        this.gameCashOutEntities = gameCashOutEntities;
+    }
+
+    public int getTotalCashOut() {
+        return totalCashOut;
+    }
+
+    public void setTotalCashOut(int totalCashOut) {
+        this.totalCashOut = totalCashOut;
     }
 }

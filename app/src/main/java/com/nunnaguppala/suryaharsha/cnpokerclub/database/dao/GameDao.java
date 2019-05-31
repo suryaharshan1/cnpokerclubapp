@@ -63,9 +63,10 @@ public interface GameDao {
     void setCashierForGame(long cashierUserId, long gameId);
 
     @Transaction
-    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
-    @Query("select *, u.totalBuyIn as totalBuyIn, GROUP_CONCAT(t.gameBuyInEntity, '^^') as gameBuyInEntities from (select user.*, game.*, (gameBuyIn.buyInID ||  '^_' || gameBuyIn.gameId || '^_' || gameBuyIn.userId || '^_' || gameBuyIn.buyIn || '^_' || gameBuyIn.buyInTime) as gameBuyInEntity from gameBuyIn inner join game on game_id=gameId inner join user on userId=id  where gameId=:gameId) as t, (select userId, SUM(buyIn) as totalBuyIn from gameBuyIn where gameId=:gameId group by userId) as u where t.id=u.userId group by t.id")
+    @Query("select *, GROUP_CONCAT(t.gameBuyInEntity, '^^') as gameBuyInEntities, GROUP_CONCAT(t.gameCashOutEntity, '^^') as gameCashOutEntities from (select user.*, game.*, (gameBuyIn.buyInID ||  '^_' || gameBuyIn.gameId || '^_' || gameBuyIn.userId || '^_' || gameBuyIn.buyIn || '^_' || gameBuyIn.buyInTime) as gameBuyInEntity, (gameCashOut.cashOutID || '^_' || gameCashOut.gameId || '^_' || gameCashOut.userId || '^_' || gameCashOut.cashOut || '^_' || gameCashOut.cashOutTime) as gameCashOutEntity from gameBuyIn left outer join gameCashOut on gameBuyIn.userId=gameCashOut.userId and gameBuyIn.gameId=gameCashOut.gameId inner join game on game_id=gameBuyIn.gameId inner join user on gameBuyIn.userId=id  where gameBuyIn.gameId=:gameId) as t, (select gameBuyIn.userId, SUM(buyIn) as totalBuyIn, ifnull(SUM(cashOut), 0) as totalCashOut from gameBuyIn left outer join gameCashOut on gameBuyIn.userId=gameCashOut.userId and gameBuyIn.gameId=gameCashOut.gameId where gameBuyIn.gameId=:gameId group by gameBuyIn.userId) as u where t.id=u.userId group by t.id")
     LiveData<List<UserTotalBuyIn>> getUsersBuyInForGame(long gameId);
+
+    
 
     class Converters {
         @TypeConverter
@@ -86,6 +87,26 @@ public interface GameDao {
 
                 }
                 return gameBuyInEntities;
+            }
+        }
+
+        @TypeConverter
+        public List<GameCashOutEntity> listGameCashOutFromConcatString(String value){
+            if(value == null || value.isEmpty()){
+                return Collections.EMPTY_LIST;
+            } else {
+                List<GameCashOutEntity> gameCashOutEntities = new ArrayList<GameCashOutEntity>();
+                String[] rows = value.split("\\^\\^");
+                for(String row : rows) {
+                    String[] cols = row.split("\\^_");
+                    int cashOutID = (cols[0] == null || cols[0].isEmpty())?-1:Integer.parseInt(cols[0]);
+                    int gameId = (cols[1] == null || cols[1].isEmpty())?-1:Integer.parseInt(cols[1]);
+                    int userId = (cols[2] == null || cols[2].isEmpty())?-1:Integer.parseInt(cols[2]);
+                    int cashOut = (cols[3] == null || cols[3].isEmpty())?0:Integer.parseInt(cols[3]);
+                    String cashOutTime = cols[4];
+                    gameCashOutEntities.add(new GameCashOutEntity(cashOutID, gameId, userId, cashOut, cashOutTime));
+                }
+                return gameCashOutEntities;
             }
         }
     }
