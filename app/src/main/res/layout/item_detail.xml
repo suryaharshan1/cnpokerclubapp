@@ -42,11 +42,20 @@ android:padding="16dp">
         android:layout_toRightOf="@+id/game_total_buyIn"
         android:layout_alignTop="@+id/game_total_buyIn"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sync_splitwise"
+        android:text="Upload to Splitwise"
+        android:layout_below="@+id/game_total_buyIn"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"/>
+
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/game_users_list"
         android:scrollbars="vertical"
-        android:layout_below="@id/game_total_buyIn"/>
+        android:layout_below="@id/sync_splitwise"/>
 
 </RelativeLayout>

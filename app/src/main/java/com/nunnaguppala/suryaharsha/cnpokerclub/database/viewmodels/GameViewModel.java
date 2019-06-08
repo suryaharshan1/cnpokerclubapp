@@ -58,6 +58,41 @@ public class GameViewModel extends ViewModel {
                 });
             }
         });
+        gameEntityLiveData = Transformations.switchMap(gameEntityLiveData, new Function<GameEntity, LiveData<GameEntity>>() {
+            @Override
+            public LiveData<GameEntity> apply(GameEntity inputGame) {
+                LiveData<Integer> totalBuyIn = gameRepository.getTotalBuyInForGame(gameId);
+                return Transformations.map(totalBuyIn, new Function<Integer, GameEntity>() {
+                    @Override
+                    public GameEntity apply(Integer inputBuyIn) {
+                        if(inputBuyIn == null){
+                            inputGame.setTotalBuyIn(0);
+                        }
+                        else {
+                            inputGame.setTotalBuyIn(inputBuyIn);
+                        }
+                        return inputGame;
+                    }
+                });
+            }
+        });
+        gameEntityLiveData = Transformations.switchMap(gameEntityLiveData, new Function<GameEntity, LiveData<GameEntity>>() {
+            @Override
+            public LiveData<GameEntity> apply(GameEntity inputGame) {
+                LiveData<Integer> totalCashOut = gameRepository.getTotalCashOutForGame(gameId);
+                return Transformations.map(totalCashOut, new Function<Integer, GameEntity>() {
+                    @Override
+                    public GameEntity apply(Integer inputCashOut) {
+                        if(inputCashOut == null){
+                            inputGame.setTotalCashOut(0);
+                        } else {
+                            inputGame.setTotalCashOut(inputCashOut);
+                        }
+                        return inputGame;
+                    }
+                });
+            }
+        });
         return gameEntityLiveData;
     }
 
@@ -99,5 +134,9 @@ public class GameViewModel extends ViewModel {
 
     public void setCashierCutForGame(GameEntity gameEntity, int cashierCut){
         gameRepository.setCashierCutForGame(gameEntity, cashierCut);
+    }
+
+    public void syncGameWithSplitwise(GameEntity gameEntity, List<UserTotalBuyIn> usersBuyInInfo, long groupId){
+        gameRepository.syncGameWithSplitwise(gameEntity, usersBuyInInfo, groupId);
     }
 }

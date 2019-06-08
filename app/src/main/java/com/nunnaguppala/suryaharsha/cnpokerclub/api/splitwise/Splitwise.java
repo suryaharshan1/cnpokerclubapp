@@ -7,7 +7,11 @@ import com.google.api.client.http.HttpContent;
 import com.google.api.client.http.HttpMethods;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.json.JsonHttpContent;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson.JacksonFactory;
+import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.CreateExpense;
+import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Expense;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Group;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListExpenses;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListGroups;
@@ -50,6 +54,37 @@ public class Splitwise extends AbstractGoogleJsonClient{
             ListExpensesRequest request = new ListExpensesRequest(groupId);
             initialize(request);
             return request;
+        }
+
+        public CreateNewExpenseRequest createNewExpense(CreateExpense createExpense) throws IOException {
+            CreateNewExpenseRequest request = new CreateNewExpenseRequest(createExpense);
+            initialize(request);
+            return request;
+        }
+
+        public CreateNewExpenseRequest createNewExpense(String requestParams) throws IOException {
+            CreateNewExpenseRequest request = new CreateNewExpenseRequest(requestParams);
+            initialize(request);
+            return request;
+        }
+
+        public class CreateNewExpenseRequest extends SplitwiseRequest<ListExpenses> {
+            private static final String REST_PATH = "create_expense";
+
+            protected CreateNewExpenseRequest(CreateExpense expense) {
+                super(Splitwise.this, HttpMethods.POST, REST_PATH,
+                        new JsonHttpContent(new JacksonFactory(), expense), ListExpenses.class);
+            }
+
+            protected CreateNewExpenseRequest(String requestParams) {
+                super(Splitwise.this, HttpMethods.GET, REST_PATH+requestParams,
+                        null, ListExpenses.class);
+            }
+
+            @Override
+            public CreateNewExpenseRequest set(String fieldName, Object value) {
+                return (CreateNewExpenseRequest) super.set(fieldName, value);
+            }
         }
 
         public class ListExpensesRequest extends SplitwiseRequest<ListExpenses> {

@@ -49,6 +49,12 @@ public interface GameDao {
     @Query("select * from game where game_id=:id LIMIT 1")
     LiveData<GameEntity> getGameInfo(int id);
 
+    @Query("select SUM(buyIn) as totalBuyIn from gameBuyIn where gameId=:gameId")
+    LiveData<Integer> getTotalGameBuyIn(long gameId);
+
+    @Query("select SUM(cashOut) as totalCashOut from gameCashOut where gameId=:gameId")
+    LiveData<Integer> getTotalGameCashOut(long gameId);
+
     @Query("select * from user where id not in (select distinct userId from gameBuyIn where gameId=:gameId) and id in (select distinct userId from groupUser where groupId=:groupId)")
     LiveData<List<UserEntity>> getNonPlayerListForGame(int gameId, int groupId);
 
@@ -63,10 +69,10 @@ public interface GameDao {
     void setCashierForGame(long cashierUserId, long gameId);
 
     @Transaction
-    @Query("select *, GROUP_CONCAT(t.gameBuyInEntity, '^^') as gameBuyInEntities, GROUP_CONCAT(t.gameCashOutEntity, '^^') as gameCashOutEntities from (select user.*, game.*, (gameBuyIn.buyInID ||  '^_' || gameBuyIn.gameId || '^_' || gameBuyIn.userId || '^_' || gameBuyIn.buyIn || '^_' || gameBuyIn.buyInTime) as gameBuyInEntity, (gameCashOut.cashOutID || '^_' || gameCashOut.gameId || '^_' || gameCashOut.userId || '^_' || gameCashOut.cashOut || '^_' || gameCashOut.cashOutTime) as gameCashOutEntity from gameBuyIn left outer join gameCashOut on gameBuyIn.userId=gameCashOut.userId and gameBuyIn.gameId=gameCashOut.gameId inner join game on game_id=gameBuyIn.gameId inner join user on gameBuyIn.userId=id  where gameBuyIn.gameId=:gameId) as t, (select gameBuyIn.userId, SUM(buyIn) as totalBuyIn, ifnull(SUM(cashOut), 0) as totalCashOut from gameBuyIn left outer join gameCashOut on gameBuyIn.userId=gameCashOut.userId and gameBuyIn.gameId=gameCashOut.gameId where gameBuyIn.gameId=:gameId group by gameBuyIn.userId) as u where t.id=u.userId group by t.id")
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Query("select *, GROUP_CONCAT(t.gameBuyInEntity, '^^') as gameBuyInEntities, GROUP_CONCAT(t.gameCashOutEntity, '^^') as gameCashOutEntities from (select user.*, game.*, (gameBuyIn.buyInID ||  '^_' || gameBuyIn.gameId || '^_' || gameBuyIn.userId || '^_' || gameBuyIn.buyIn || '^_' || gameBuyIn.buyInTime) as gameBuyInEntity, (gameCashOut.cashOutID || '^_' || gameCashOut.gameId || '^_' || gameCashOut.userId || '^_' || gameCashOut.cashOut || '^_' || gameCashOut.cashOutTime) as gameCashOutEntity from gameBuyIn left outer join gameCashOut on gameBuyIn.userId=gameCashOut.userId and gameBuyIn.gameId=gameCashOut.gameId inner join game on game_id=gameBuyIn.gameId inner join user on gameBuyIn.userId=id  where gameBuyIn.gameId=:gameId) as t, (select * from (select userId, ifnull(SUM(buyIn), 0) as totalBuyIn from gameBuyIn where gameId=:gameId group by userId) as x, (select y.userId, ifnull(SUM(cashOut), 0) as totalCashOut from (select distinct userId from gameBuyIn where gameId=:gameId) as y left outer join gameCashOut on y.userId=gameCashOut.userId where gameCashOut.gameId=:gameId group by y.userId) as z where x.userId=z.userId) as z where t.id=z.userId group by t.id")
     LiveData<List<UserTotalBuyIn>> getUsersBuyInForGame(long gameId);
 
-    
 
     class Converters {
         @TypeConverter

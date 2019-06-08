@@ -148,8 +148,8 @@ class PokerClubModule {
     }
 
     @Provides
-    GameRepository provideGameRepository(PokerClubDatabase database, Executor executor){
-        return new GameRepository(database, executor);
+    GameRepository provideGameRepository(PokerClubDatabase database, Executor executor, Splitwise splitwise){
+        return new GameRepository(database, executor, splitwise);
     }
 
     @Provides

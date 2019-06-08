@@ -48,11 +48,14 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
     private SparseBooleanArray buyInUIMap;
     private SparseBooleanArray cashOutUIMap;
 
+    private LayoutInflater layoutInflater;
+
     public GameUsersAdapter(Context context, GameViewModel gameViewModel) {
         this.context = context;
         this.gameViewModel = gameViewModel;
         this.buyInUIMap = new SparseBooleanArray();
         this.cashOutUIMap = new SparseBooleanArray();
+        this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -68,7 +71,6 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         holder.userName.setText(String.valueOf(userTotalBuyIn.getUser().getFirstName()));
         holder.userBuyInInfo.setText("Total BuyIn: " + String.valueOf(userTotalBuyIn.getTotalBuyIn()));
         holder.userCashOutInfo.setText("Total CashOut: " + String.valueOf(userTotalBuyIn.getTotalCashOut()));
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         for(GameBuyInEntity gameBuyInEntity : userTotalBuyIn.getGameBuyInEntities()){
             if(!buyInUIMap.get(gameBuyInEntity.getBuyInID(), false) && gameBuyInEntity.getBuyIn() != 0){
                 String buyInItem = gameBuyInEntity.getBuyInTime() + " BuyIn: " + gameBuyInEntity.getBuyIn();

@@ -7,7 +7,9 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
@@ -26,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -62,12 +65,15 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
     private DummyContent.DummyItem mItem;
     private GameEntity gameEntity;
     private long gameId;
+    private long groupId;
 
     private RecyclerView recyclerView;
     private GameUsersAdapter gameUsersAdapter;
     private CashierAdapter cashierAdapter;
+    private Button syncSplitwise;
+    private List<UserTotalBuyIn> userBuyInInfo;
 
-    private TextView cashierTitle, cashierCut;
+    private TextView cashierTitle, cashierCut, totalBuyInInfo, totalCashOutInfo;
 
     @Inject
     ViewModelFactory mViewModelFactory;
@@ -92,6 +98,8 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
         mLifecycleRegistry.markState(Lifecycle.State.CREATED);
         gameViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GameViewModel.class);
         gameId = getArguments().getInt(ARG_ITEM_ID, -1);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PokerClubConstants.APPLICATION_PREF_FILE, Context.MODE_PRIVATE);
+        groupId = sharedPreferences.getInt(PokerClubConstants.DEFAULT_GROUP_ID_PREF_KEY, -1);
         if (gameId == -1) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMMM dd, HH:mm");
             String gameName = simpleDateFormat.format(Calendar.getInstance().getTime());
@@ -137,6 +145,18 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
                     content.setSpan(new UnderlineSpan(), "Cashier Cut: ".length(), content.length(), 0);
                     cashierCut.setText(content);
                 }
+                if(totalBuyInInfo != null){
+                    totalBuyInInfo.setText("Total Game BuyIn: " + String.valueOf(game.getTotalBuyIn()));
+                }
+                if(totalCashOutInfo != null) {
+                    totalCashOutInfo.setText("Total Game CashOut: " + String.valueOf(game.getTotalCashOut()));
+                }
+                if(game.getTotalCashOut() - game.getTotalBuyIn() == 0 && game.getTotalBuyIn() != 0 &&
+                game.getStatus() != GameEntity.Status.PUBLISHED) {
+                    syncSplitwise.setVisibility(View.VISIBLE);
+                } else {
+                    syncSplitwise.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -158,6 +178,7 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
         gameViewModel.getUsersBuyInForGame(gameId).observe(this, new Observer<List<UserTotalBuyIn>>() {
             @Override
             public void onChanged(@Nullable List<UserTotalBuyIn> userTotalBuyIns) {
+                userBuyInInfo = userTotalBuyIns;
                 gameUsersAdapter.setUserData(userTotalBuyIns);
                 gameUsersAdapter.notifyDataSetChanged();
             }
@@ -212,6 +233,15 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
                         .setNegativeButton("Cancel", null)
                         .create();
                 dialog.show();
+            }
+        });
+        totalBuyInInfo = (TextView) rootView.findViewById(R.id.game_total_buyIn);
+        totalCashOutInfo = (TextView) rootView.findViewById(R.id.game_total_cashOut);
+        syncSplitwise = (Button) rootView.findViewById(R.id.sync_splitwise);
+        syncSplitwise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gameViewModel.syncGameWithSplitwise(gameEntity, userBuyInInfo, groupId);
             }
         });
         return rootView;

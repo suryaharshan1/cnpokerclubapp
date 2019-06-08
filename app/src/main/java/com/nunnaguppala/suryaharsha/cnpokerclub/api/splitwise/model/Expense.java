@@ -24,7 +24,7 @@ public class Expense extends GenericJson {
     @Key("repeats")
     private boolean repeats;
 
-    @Key("repeat_iterval")
+    @Key("repeat_interval")
     private String repeatInterval;
 
     @Key("email_reminder")

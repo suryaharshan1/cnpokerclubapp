@@ -3,10 +3,14 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories;
 import android.arch.lifecycle.LiveData;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.Splitwise;
+import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.CreateExpense;
+import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ExpenseUserShare;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.PokerClubDatabase;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
@@ -14,7 +18,9 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -29,10 +35,13 @@ public class GameRepository {
 
     private final Executor executor;
 
+    private final Splitwise splitwise;
+
     @Inject
-    public GameRepository(PokerClubDatabase database, Executor executor) {
+    public GameRepository(PokerClubDatabase database, Executor executor, Splitwise splitwise) {
         this.database = database;
         this.executor = executor;
+        this.splitwise = splitwise;
     }
 
     public LiveData<List<GameEntity>> getAllGames() {
@@ -112,6 +121,14 @@ public class GameRepository {
         return database.getGameDao().getCashierForGame(gameId);
     }
 
+    public LiveData<Integer> getTotalBuyInForGame(long gameId){
+        return database.getGameDao().getTotalGameBuyIn(gameId);
+    }
+
+    public LiveData<Integer> getTotalCashOutForGame(long gameId){
+        return database.getGameDao().getTotalGameCashOut(gameId);
+    }
+
     public void setCashierForGame(long cashierUserId, long gameId) {
         executor.execute(new Runnable() {
             @Override
@@ -161,6 +178,56 @@ public class GameRepository {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy,HH:mm");
                 String currentTime = simpleDateFormat.format(Calendar.getInstance().getTime());
                 database.getGameCashOutDao().insert(new GameCashOutEntity(gameId, userId, cashOut, currentTime));
+            }
+        });
+    }
+
+    public void syncGameWithSplitwise(GameEntity gameEntity, List<UserTotalBuyIn> usersBuyInInfo, long groupId){
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                StringBuilder s = new StringBuilder("?currency_code=INR&category_id=18&creation_method=iou&");
+                s.append("group_id=");
+                s.append(groupId);
+                s.append("&");
+                s.append("cost=");
+                s.append(gameEntity.getTotalBuyIn());
+                s.append("&");
+                s.append("description=");
+                s.append(Uri.encode(gameEntity.getName()));
+                int index = 0;
+                for(UserTotalBuyIn userBuyIn : usersBuyInInfo) {
+                    String userParamPrefix = "users__" + String.valueOf(index) + "__";
+                    s.append("&");
+                    s.append(userParamPrefix);
+                    s.append("user_id=");
+                    s.append(userBuyIn.getUser().getId());
+                    s.append("&");
+                    s.append(userParamPrefix);
+                    s.append("paid_share=");
+                    if(gameEntity.getCashier() != null && gameEntity.getCashier().getId() == userBuyIn.getUser().getId()){
+                        s.append(userBuyIn.getTotalCashOut() + gameEntity.getCashierCut()*usersBuyInInfo.size());
+                    }
+                    else {
+                        s.append(userBuyIn.getTotalCashOut());
+                    }
+                    s.append("&");
+                    s.append(userParamPrefix);
+                    s.append("owed_share=");
+                    s.append(userBuyIn.getTotalBuyIn() +
+                            (gameEntity.getCashier()==null?0:gameEntity.getCashierCut()));
+                    index++;
+                }
+                try {
+                    Splitwise.Expenses.CreateNewExpenseRequest request = splitwise.expenses().createNewExpense(s.toString());
+                    request.execute();
+                    gameEntity.setStatus(GameEntity.Status.PUBLISHED);
+                    database.getGameDao().update(gameEntity);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("GameRepository", e.toString());
+                    Log.e("GameRepository", e.getLocalizedMessage());
+                }
             }
         });
     }
