@@ -1,7 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos;
 
 import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Relation;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;

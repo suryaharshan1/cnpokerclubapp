@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +45,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.GameViewModel;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
-import com.nunnaguppala.suryaharsha.cnpokerclub.dummy.DummyContent;
 
 import java.util.List;
 
@@ -68,7 +66,6 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
     private GameEntity gameEntity;
     private long gameId;
     private long groupId;

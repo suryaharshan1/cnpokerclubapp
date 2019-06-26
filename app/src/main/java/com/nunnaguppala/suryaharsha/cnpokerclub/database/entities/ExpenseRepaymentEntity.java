@@ -3,8 +3,6 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database.entities;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Expense;
-
 @Entity(tableName = "expenseRepayment", primaryKeys = {"fromUser", "toUser", "expenseId"})
 public class ExpenseRepaymentEntity {
     @ForeignKey(entity = UserEntity.class, parentColumns = {"id"}, childColumns = {"fromUser"})

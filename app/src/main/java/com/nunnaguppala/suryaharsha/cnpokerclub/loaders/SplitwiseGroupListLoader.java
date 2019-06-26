@@ -1,7 +1,6 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.loaders;
 
 import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
 
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
@@ -13,7 +12,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.Splitwise;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.SplitwiseRequestInitializer;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListGroups;
 
-import java.util.List;
 
 public class SplitwiseGroupListLoader extends AsyncResourceLoader<ListGroups> {
 

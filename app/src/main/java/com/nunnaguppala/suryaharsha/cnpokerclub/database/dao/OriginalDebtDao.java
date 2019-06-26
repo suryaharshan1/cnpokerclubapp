@@ -7,7 +7,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.OriginalDebt;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.OriginalDebtEntity;
 
 import java.util.List;

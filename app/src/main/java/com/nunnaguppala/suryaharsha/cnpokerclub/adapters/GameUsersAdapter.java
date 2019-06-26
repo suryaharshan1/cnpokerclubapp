@@ -5,21 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
@@ -27,11 +22,7 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEnt
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.GameViewModel;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.ViewHolder> {

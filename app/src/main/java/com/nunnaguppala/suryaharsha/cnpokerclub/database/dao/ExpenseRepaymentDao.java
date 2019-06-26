@@ -8,7 +8,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseRepaymentEntity;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
 
 import java.util.List;
 

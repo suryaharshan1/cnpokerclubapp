@@ -1,6 +1,5 @@
 package com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise;
 
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClientRequest;
 import com.google.api.client.googleapis.services.json.CommonGoogleJsonClientRequestInitializer;
 

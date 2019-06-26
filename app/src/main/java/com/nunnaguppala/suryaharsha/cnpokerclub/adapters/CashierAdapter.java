@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 
 import java.util.List;

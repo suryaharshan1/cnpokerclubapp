@@ -7,10 +7,8 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ExpenseCategory;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseCategoryEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
 
 import java.util.List;
 

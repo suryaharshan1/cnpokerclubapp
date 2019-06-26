@@ -14,7 +14,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.ItemDetailFragment;
 import com.nunnaguppala.suryaharsha.cnpokerclub.ItemListActivity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameEntity;
-import com.nunnaguppala.suryaharsha.cnpokerclub.dummy.DummyContent;
 
 import java.util.Collections;
 import java.util.List;

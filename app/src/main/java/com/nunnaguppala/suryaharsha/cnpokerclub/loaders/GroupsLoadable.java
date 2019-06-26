@@ -3,7 +3,6 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.loaders;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.text.TextUtils;
 
 import com.google.api.client.util.Preconditions;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Group;

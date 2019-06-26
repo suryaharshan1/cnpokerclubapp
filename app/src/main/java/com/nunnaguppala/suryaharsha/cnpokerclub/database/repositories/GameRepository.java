@@ -9,8 +9,6 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.Splitwise;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.CreateExpense;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ExpenseUserShare;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.PokerClubDatabase;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameBuyInEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameCashOutEntity;
@@ -20,7 +18,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.UserTotalBuyIn;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;

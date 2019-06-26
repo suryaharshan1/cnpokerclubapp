@@ -2,7 +2,6 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database.entities;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
-import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 @Entity(tableName = "simplifiedDebt", primaryKeys = {"fromUser", "toUser", "groupId", "currencyCode"})

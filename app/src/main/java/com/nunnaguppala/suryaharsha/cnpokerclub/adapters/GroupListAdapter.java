@@ -13,8 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Group;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListGroups;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GroupEntity;
 
 import java.util.List;

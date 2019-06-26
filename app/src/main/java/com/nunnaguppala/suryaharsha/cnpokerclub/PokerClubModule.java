@@ -8,17 +8,12 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.Splitwise;
 import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.SplitwiseRequestInitializer;
@@ -32,7 +27,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.UserReposi
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
 import com.wuman.android.auth.AuthorizationFlow;
 import com.wuman.android.auth.oauth.OAuthHmacCredential;
-import com.wuman.android.auth.oauth2.store.FilePersistedCredential;
 import com.wuman.android.auth.oauth2.store.SharedPreferencesCredentialStore;
 
 import java.io.IOException;

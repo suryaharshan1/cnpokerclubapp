@@ -3,8 +3,6 @@ package com.nunnaguppala.suryaharsha.cnpokerclub.database;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ExpenseCategory;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.Group;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseCategoryDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseRepaymentDao;
