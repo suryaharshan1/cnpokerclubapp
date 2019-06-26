@@ -12,6 +12,7 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseCategoryDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseRepaymentDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.ExpenseUserShareDao;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.dao.GameFilterDao;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseCategoryEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseRepaymentEntity;
@@ -61,7 +62,7 @@ public class ExpenseRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                database.getGameFilterDao().insert(new GameFilterEntity(expenseId, gameFlag));
+                database.getGameFilterDao().insert(new GameFilterEntity(expenseId, gameFlag, true));
             }
         });
     }
@@ -74,6 +75,7 @@ public class ExpenseRepository {
                 ExpenseCategoryDao expenseCategoryDao = database.getExpenseCategoryDao();
                 ExpenseRepaymentDao expenseRepaymentDao = database.getExpenseRepaymentDao();
                 ExpenseUserShareDao expenseUserShareDao = database.getExpenseUserShareDao();
+                GameFilterDao gameFilterDao = database.getGameFilterDao();
                 ListExpenses listExpenses = null;
                 try {
                     Splitwise.Expenses.ListExpensesRequest request = splitwise.expenses().listExpenses(groupId);
@@ -106,6 +108,7 @@ public class ExpenseRepository {
                             expense.getDeletedAt(), expense.getDeletedBy().getId(),
                             expense.getCategory().getId(), expense.getReceipt().getLargeReceipt(),
                             expense.getReceipt().getOriginalReceipt()));
+                    gameFilterDao.insert(new GameFilterEntity(expense.getId(), true, false));
                     if(expense.getRepayments() != null) {
                         for(ExpenseRepayment expenseRepayment : expense.getRepayments()){
                             expenseRepaymentDao.insert(new ExpenseRepaymentEntity(expenseRepayment.getFromUser(),

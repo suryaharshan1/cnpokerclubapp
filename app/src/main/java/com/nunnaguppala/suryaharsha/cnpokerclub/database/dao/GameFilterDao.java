@@ -24,7 +24,7 @@ public interface GameFilterDao {
     @Delete
     void delete(GameFilterEntity... gameFilterEntities);
 
-    @Query("select * from expense where id not in (select expenseId from expenseFilter)")
+    @Query("select * from expense where id not in (select expenseId from expenseFilter where verified=1)")
     LiveData<List<ExpenseEntity>> getAllUncategorisedExpenses();
 
     @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=1)")
@@ -33,7 +33,7 @@ public interface GameFilterDao {
     @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=0)")
     LiveData<List<ExpenseEntity>> getAllNonGameExpenses();
 
-    @Query("select * from expense where id not in (select expenseId from expenseFilter) and groupId=:groupId")
+    @Query("select * from expense where id not in (select expenseId from expenseFilter where verified=0) and groupId=:groupId")
     LiveData<List<ExpenseEntity>> getUncategorisedExpensesInGroup(int groupId);
 
     @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=1) and groupId=:groupId")

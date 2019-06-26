@@ -63,6 +63,7 @@ public class UsersFragment extends Fragment implements LifecycleOwner {
     @Inject
     ViewModelFactory mViewModelFactory;
     ExpensesViewModel expensesViewModel;
+    GroupsViewModel groupsViewModel;
     @Inject
     Executor executor;
 
@@ -115,6 +116,8 @@ public class UsersFragment extends Fragment implements LifecycleOwner {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         expensesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ExpensesViewModel.class);
+        groupsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GroupsViewModel.class);
+        groupsViewModel.getAllGroups();
         expensesViewModel.getAllExpenseSharesForUsersInGroup(groupId).observe(this, new Observer<List<ExpenseUserShareAndDetails>>() {
             @Override
             public void onChanged(@Nullable List<ExpenseUserShareAndDetails> expenseUserShareAndDetails) {

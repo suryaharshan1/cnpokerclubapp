@@ -12,9 +12,12 @@ public class GameFilterEntity {
 
     private boolean gameFlag;
 
-    public GameFilterEntity(int expenseId, boolean gameFlag) {
+    private boolean verified;
+
+    public GameFilterEntity(int expenseId, boolean gameFlag, boolean verified) {
         this.expenseId = expenseId;
         this.gameFlag = gameFlag;
+        this.verified = verified;
     }
 
     public int getExpenseId() {
@@ -31,5 +34,13 @@ public class GameFilterEntity {
 
     public void setGameFlag(boolean gameFlag) {
         this.gameFlag = gameFlag;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }
