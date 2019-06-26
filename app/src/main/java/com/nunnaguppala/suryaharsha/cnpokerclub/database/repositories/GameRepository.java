@@ -191,7 +191,11 @@ public class GameRepository {
                 s.append(groupId);
                 s.append("&");
                 s.append("cost=");
-                s.append(gameEntity.getTotalBuyIn());
+                if(gameEntity.getCashier() != null) {
+                    s.append(gameEntity.getTotalBuyIn() + gameEntity.getCashierCut()*usersBuyInInfo.size());
+                } else {
+                    s.append(gameEntity.getTotalBuyIn());
+                }
                 s.append("&");
                 s.append("description=");
                 s.append(Uri.encode(gameEntity.getName()));
@@ -214,11 +218,16 @@ public class GameRepository {
                     s.append("&");
                     s.append(userParamPrefix);
                     s.append("owed_share=");
-                    s.append(userBuyIn.getTotalBuyIn() +
-                            (gameEntity.getCashier()==null?0:gameEntity.getCashierCut()));
+                    if(gameEntity.getCashier() == null) {
+                        s.append(userBuyIn.getTotalBuyIn());
+                    }
+                    else {
+                        s.append(userBuyIn.getTotalBuyIn() + gameEntity.getCashierCut());
+                    }
                     index++;
                 }
                 try {
+                    Log.d("GameRepository", s.toString());
                     Splitwise.Expenses.CreateNewExpenseRequest request = splitwise.expenses().createNewExpense(s.toString());
                     request.execute();
                     gameEntity.setStatus(GameEntity.Status.PUBLISHED);

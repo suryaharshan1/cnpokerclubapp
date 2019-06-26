@@ -11,12 +11,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.DefaultGroupSelectionFragment;
+import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.ExpenseFilterFragment;
 import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.LoginFragment;
 import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.UsersFragment;
 
 public class MainActivity extends AppCompatActivity implements DefaultGroupSelectionFragment.OnFragmentInteractionListener,
-        UsersFragment.OnFragmentInteractionListener, LoginFragment.OnLoginFragmentInteractionListener {
+        UsersFragment.OnFragmentInteractionListener, LoginFragment.OnLoginFragmentInteractionListener,
+        ExpenseFilterFragment.OnListFragmentInteractionListener {
+
+    private int defaultGroupID = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements DefaultGroupSelec
         ((PokerClubApplication)getApplication()).getPokerClubComponent().inject(this);
         FragmentManager fm = getSupportFragmentManager();
         SharedPreferences sharedPreferences = getSharedPreferences(PokerClubConstants.APPLICATION_PREF_FILE, MODE_PRIVATE);
-        int defaultGroupID = sharedPreferences.getInt(PokerClubConstants.DEFAULT_GROUP_ID_PREF_KEY, -1);
+        defaultGroupID = sharedPreferences.getInt(PokerClubConstants.DEFAULT_GROUP_ID_PREF_KEY, -1);
         boolean isLoggedIn = sharedPreferences.getBoolean(PokerClubConstants.IS_LOGGED_IN_KEY, false);
         if(!isLoggedIn){
             LoginFragment loginFragment = new LoginFragment();
@@ -56,6 +61,12 @@ public class MainActivity extends AppCompatActivity implements DefaultGroupSelec
                 Intent intent = new Intent(this, ItemListActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_game_filter:
+                ExpenseFilterFragment expenseFilterFragment = ExpenseFilterFragment.newInstance(defaultGroupID);
+                getSupportFragmentManager().beginTransaction().replace(
+                        R.id.content_main, expenseFilterFragment
+                ).addToBackStack(null).commit();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -65,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements DefaultGroupSelec
     public void onDefaultGroupSelectionFragmentInteraction(int groupId) {
         UsersFragment usersFragment = UsersFragment.newInstance(groupId);
         getSupportFragmentManager().popBackStack();
-        getSupportFragmentManager().beginTransaction().add(R.id.content_main, usersFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_main, usersFragment).commit();
     }
 
     @Override
@@ -79,6 +90,11 @@ public class MainActivity extends AppCompatActivity implements DefaultGroupSelec
                 DefaultGroupSelectionFragment.newInstance();
         getSupportFragmentManager().popBackStack();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.content_main, defaultGroupSelectionFragment).commit();
+                .replace(R.id.content_main, defaultGroupSelectionFragment).commit();
+    }
+
+    @Override
+    public void onListFragmentInteraction(ExpenseEntity item) {
+
     }
 }

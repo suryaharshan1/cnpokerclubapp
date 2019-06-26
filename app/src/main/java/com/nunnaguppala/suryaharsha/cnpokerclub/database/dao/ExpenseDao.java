@@ -43,4 +43,25 @@ public interface ExpenseDao {
 
     @Query("SELECT * FROM expense WHERE expenseCategoryId=:expenseCategoryId")
     LiveData<List<ExpenseEntity>> getAllExpensesInCategory(int expenseCategoryId);
+
+    @Query("select * from expense where id not in (select expenseId from expenseFilter)")
+    LiveData<List<ExpenseEntity>> getAllUncategorisedExpenses();
+
+    @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=1)")
+    LiveData<List<ExpenseEntity>> getAllFilteredExpenses();
+
+    @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=0)")
+    LiveData<List<ExpenseEntity>> getAllNonGameExpenses();
+
+    @Query("select * from expense where id not in (select expenseId from expenseFilter) and groupId=:groupId")
+    LiveData<List<ExpenseEntity>> getUncategorisedExpensesInGroup(int groupId);
+
+    @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=1) and groupId=:groupId")
+    LiveData<List<ExpenseEntity>> getFilteredExpensesInGroup(int groupId);
+
+    @Query("select * from expense where id in (select expenseId from expenseFilter where gameFlag=0) and groupId=:groupId")
+    LiveData<List<ExpenseEntity>> getAllNonGameExpensesInGroup(int groupId);
+
+    @Query("SELECT * FROM expense WHERE groupId=:groupId AND id in (SELECT expenseUserShare.expenseId FROM expenseUserShare inner join expenseFilter on expenseUserShare.expenseId=expenseFilter.expenseId WHERE userId=:userId and gameFlag=1)")
+    LiveData<List<ExpenseEntity>> getAllFilteredExpensesForUserInGroup(int userId, int groupId);
 }

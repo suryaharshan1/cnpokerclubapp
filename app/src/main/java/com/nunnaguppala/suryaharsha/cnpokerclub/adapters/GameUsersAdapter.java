@@ -58,6 +58,13 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    public void moveItem(int fromPosition, int toPosition) {
+        UserTotalBuyIn item = userBuyIn.get(fromPosition);
+        userBuyIn.remove(fromPosition);
+        if(fromPosition > toPosition) --fromPosition;
+        userBuyIn.add(toPosition, item);
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_detail_row, parent, false);

@@ -107,7 +107,8 @@ public class UsersFragment extends Fragment implements LifecycleOwner {
         usersAdapter.setHasStableIds(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+//        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.getItemAnimator().setChangeDuration(0);
         recyclerView.setAdapter(usersAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(40);

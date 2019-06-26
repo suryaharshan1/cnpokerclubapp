@@ -9,6 +9,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
@@ -22,16 +23,21 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.CashierAdapter;
 import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.GameUsersAdapter;
@@ -94,6 +100,7 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
         super.onCreate(savedInstanceState);
         ((PokerClubApplication)getActivity().getApplication()).
                 getPokerClubComponent().inject(this);
+        setHasOptionsMenu(true);
         mLifecycleRegistry = new LifecycleRegistry(this);
         mLifecycleRegistry.markState(Lifecycle.State.CREATED);
         gameViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GameViewModel.class);
@@ -175,6 +182,38 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
         recyclerView.setItemViewCacheSize(40);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.START | ItemTouchHelper.END, 0) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                GameUsersAdapter adapter = (GameUsersAdapter) recyclerView.getAdapter();
+                int from = viewHolder.getAdapterPosition();
+                int to = target.getAdapterPosition();
+                adapter.moveItem(from, to);
+                adapter.notifyItemMoved(from, to);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                if(actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    viewHolder.itemView.setAlpha(0.5f);
+                }
+            }
+
+            @Override
+            public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                super.clearView(recyclerView, viewHolder);
+                viewHolder.itemView.setAlpha(1.0f);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
         gameViewModel.getUsersBuyInForGame(gameId).observe(this, new Observer<List<UserTotalBuyIn>>() {
             @Override
             public void onChanged(@Nullable List<UserTotalBuyIn> userTotalBuyIns) {
@@ -245,6 +284,54 @@ public class ItemDetailFragment extends Fragment implements LifecycleOwner  {
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_game, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.game_share:
+                Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
+                whatsappIntent.setType("text/plain");
+                whatsappIntent.setPackage("com.whatsapp");
+                StringBuilder s = new StringBuilder(gameEntity.getName());
+                s.append("\n");
+                s.append("Cashier:\t");
+                s.append(gameEntity.getCashier().getFirstName());
+                s.append("\t");
+                s.append(gameEntity.getCashier().getLastName());
+                s.append("\t");
+                s.append("Cashier Cut:\t");
+                s.append(gameEntity.getCashierCut());
+                s.append("\teach");
+                s.append("\n\n");
+                for(UserTotalBuyIn userBuyIn : userBuyInInfo) {
+                    s.append(userBuyIn.getUser().getFirstName());
+                    s.append(userBuyIn.getUser().getLastName());
+                    s.append("\t");
+                    s.append(userBuyIn.getTotalBuyIn());
+                    s.append("\t");
+                    s.append(userBuyIn.getTotalCashOut());
+                    s.append("\n");
+                }
+                whatsappIntent.putExtra(Intent.EXTRA_TEXT, s.toString());
+                try {
+                    getActivity().startActivity(whatsappIntent);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(getContext(), "Whatsapp application not found", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            case R.id.game_log_hands:
+                Toast.makeText(getContext(), "Feature in development", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @NonNull

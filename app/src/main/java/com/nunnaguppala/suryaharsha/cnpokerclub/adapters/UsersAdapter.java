@@ -5,8 +5,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +35,7 @@ import java.util.stream.IntStream;
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> {
     private List<ExpenseUserShareAndDetails> usersShareAndDetails = Collections.<ExpenseUserShareAndDetails>emptyList();
     private Executor executor;
+    private SparseArray<UserDataHolder> cacheUserData = new SparseArray<>();
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView userName, totalGames, totalDebt;
@@ -63,32 +67,42 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ExpenseUserShareAndDetails userAndDetails = usersShareAndDetails.get(position);
-        holder.userName.setText(userAndDetails.getUser().getFirstName() + " " + userAndDetails.getUser().getLastName());
-        double totalDebtOfUser = 0.0;
-        final LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<DataPoint>();
-        final LineGraphSeries<DataPoint> cummGraphSeries = new LineGraphSeries<DataPoint>();
-        cummGraphSeries.setColor(Color.GREEN);
-        cummGraphSeries.setTitle("Cumulative Winnings");
-        lineGraphSeries.setTitle("Game Winnings");
-        lineGraphSeries.setColor(Color.BLUE);
-        int counter = 0;
-        IntStream.range(0, userAndDetails.getShares().size()).forEach(
-                index -> {
-                    lineGraphSeries.appendData(new DataPoint(index, Double.valueOf(userAndDetails.getShares().get(index).getNetBalance())),
-                            false, 500);
+        if (cacheUserData.get(userAndDetails.getUser().getId()) == null) {
+            double totalDebtOfUser = 0.0;
+            int counter = 1;
+            DataPoint[] gameDataPoints;
+            DataPoint[] cummDataPoints;
+            if(userAndDetails.getShares().size() > 0) {
+                gameDataPoints = new DataPoint[userAndDetails.getShares().size()+1];
+                cummDataPoints = new DataPoint[userAndDetails.getShares().size()+1];
+                gameDataPoints[0] = new DataPoint(0, 0);
+                cummDataPoints[0] = new DataPoint(0,0);
+                for(ExpenseUserShareEntity share : userAndDetails.getShares()) {
+                    totalDebtOfUser += Double.valueOf(share.getNetBalance());
+                    gameDataPoints[counter] = new DataPoint(counter, Double.valueOf(share.getNetBalance()));
+                    cummDataPoints[counter] = new DataPoint(counter, totalDebtOfUser);
+                    counter++;
                 }
-        );
-        for(ExpenseUserShareEntity share : userAndDetails.getShares()){
-            totalDebtOfUser += Double.valueOf(share.getNetBalance());
-//            lineGraphSeries.appendData(new DataPoint(counter, Double.valueOf(share.getNetBalance())),
-//                    false, 500);
-            cummGraphSeries.appendData(new DataPoint(counter, totalDebtOfUser), false, 500);
-            counter++;
+            } else {
+                gameDataPoints = new DataPoint[] {new DataPoint(0, 0)};
+                cummDataPoints = new DataPoint[] {new DataPoint(0, 0)};
+            }
+            final LineGraphSeries<DataPoint> lineGraphSeries = new LineGraphSeries<DataPoint>(gameDataPoints);
+            final LineGraphSeries<DataPoint> cummGraphSeries = new LineGraphSeries<DataPoint>(cummDataPoints);
+            cummGraphSeries.setColor(Color.GREEN);
+            cummGraphSeries.setTitle("Cumulative Winnings");
+            lineGraphSeries.setTitle("Game Winnings");
+            lineGraphSeries.setColor(Color.BLUE);
+            cacheUserData.put(userAndDetails.getUser().getId(), new UserDataHolder(lineGraphSeries, cummGraphSeries, totalDebtOfUser, userAndDetails.getShares().size()));
         }
-        holder.totalDebt.setText(String.valueOf(totalDebtOfUser));
+        holder.userName.setText(userAndDetails.getUser().getFirstName() + " " + userAndDetails.getUser().getLastName());
+        holder.totalDebt.setText(String.valueOf(cacheUserData.get(userAndDetails.getUser().getId()).getTotalDebt()));
         holder.totalGames.setText(String.valueOf(userAndDetails.getShares().size()));
-        holder.winningsGraph.addSeries(lineGraphSeries);
-        holder.winningsGraph.addSeries(cummGraphSeries);
+        holder.winningsGraph.getViewport().setXAxisBoundsManual(true);
+        holder.winningsGraph.getViewport().setMinX(0.0);
+        holder.winningsGraph.getViewport().setMaxX(userAndDetails.getShares().size()+1);
+        holder.winningsGraph.addSeries(cacheUserData.get(userAndDetails.getUser().getId()).getLineGraphSeries());
+        holder.winningsGraph.addSeries(cacheUserData.get(userAndDetails.getUser().getId()).getCummGraphSeries());
 //        holder.winningsGraph.getLegendRenderer().setVisible(true);
     }
 
@@ -99,12 +113,58 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
     @Override
     public long getItemId(int position) {
-        return usersShareAndDetails.get(position).getUser().getId();
+        return usersShareAndDetails.get(position).hashCode();
     }
 
     @Override
     public void onViewRecycled(ViewHolder holder) {
         holder.winningsGraph.removeAllSeries();
         super.onViewRecycled(holder);
+    }
+
+    private class UserDataHolder {
+        private LineGraphSeries<DataPoint> lineGraphSeries;
+        private LineGraphSeries<DataPoint> cummGraphSeries;
+        private double totalDebt;
+        private int size;
+
+        public UserDataHolder(LineGraphSeries<DataPoint> lineGraphSeries, LineGraphSeries<DataPoint> cummGraphSeries, double totalDebt, int size) {
+            this.lineGraphSeries = lineGraphSeries;
+            this.cummGraphSeries = cummGraphSeries;
+            this.totalDebt = totalDebt;
+            this.size = size;
+        }
+
+        public LineGraphSeries<DataPoint> getLineGraphSeries() {
+            return lineGraphSeries;
+        }
+
+        public void setLineGraphSeries(LineGraphSeries<DataPoint> lineGraphSeries) {
+            this.lineGraphSeries = lineGraphSeries;
+        }
+
+        public LineGraphSeries<DataPoint> getCummGraphSeries() {
+            return cummGraphSeries;
+        }
+
+        public void setCummGraphSeries(LineGraphSeries<DataPoint> cummGraphSeries) {
+            this.cummGraphSeries = cummGraphSeries;
+        }
+
+        public double getTotalDebt() {
+            return totalDebt;
+        }
+
+        public void setTotalDebt(double totalDebt) {
+            this.totalDebt = totalDebt;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
     }
 }

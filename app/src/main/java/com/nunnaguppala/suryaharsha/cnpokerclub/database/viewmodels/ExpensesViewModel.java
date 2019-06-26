@@ -26,4 +26,12 @@ public class ExpensesViewModel extends ViewModel{
     public LiveData<List<ExpenseUserShareAndDetails>> getAllExpenseSharesForUsersInGroup(int groupId){
         return expenseRepository.getUsersAndExpenseSharesInGroup(groupId);
     }
+
+    public LiveData<List<ExpenseEntity>> getUncategorisedExpensesInGroup(int groupId) {
+        return expenseRepository.getUncategorisedExpensesInGroup(groupId);
+    }
+
+    public void addExpenseFilter(int expenseId, boolean gameFlag) {
+        expenseRepository.addExpenseFilter(expenseId, gameFlag);
+    }
 }

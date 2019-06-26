@@ -16,6 +16,7 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseCategor
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseRepaymentEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseUserShareEntity;
+import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.GameFilterEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.ExpenseUserShareAndDetails;
 
 import java.io.IOException;
@@ -46,6 +47,25 @@ public class ExpenseRepository {
         return database.getExpenseUserShareDao().getAllExpenseSharesForUsersInGroup(groupId);
     }
 
+    public LiveData<List<ExpenseEntity>> getUncategorisedExpensesInGroup(int groupId){
+        refreshExpensesInGroup(groupId);
+        return database.getExpenseDao().getUncategorisedExpensesInGroup(groupId);
+    }
+
+    public LiveData<List<ExpenseEntity>> getFilteredExpensesInGroup(int groupId){
+        refreshExpensesInGroup(groupId);
+        return database.getExpenseDao().getFilteredExpensesInGroup(groupId);
+    }
+
+    public void addExpenseFilter(int expenseId, boolean gameFlag) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                database.getGameFilterDao().insert(new GameFilterEntity(expenseId, gameFlag));
+            }
+        });
+    }
+
     private void refreshExpensesInGroup(final int groupId) {
         executor.execute(new Runnable() {
             @Override
@@ -69,6 +89,9 @@ public class ExpenseRepository {
                     return;
                 }
                 for(Expense expense: expenses){
+                    if(expense.getDeletedBy() != null && expense.getDeletedBy().getId() != 0){
+                        continue;
+                    }
                     expenseCategoryDao.insert(new ExpenseCategoryEntity(expense.getCategory().getId(),
                             expense.getCategory().getName()));
                     expenseDao.insert(new ExpenseEntity(expense.getId(),
