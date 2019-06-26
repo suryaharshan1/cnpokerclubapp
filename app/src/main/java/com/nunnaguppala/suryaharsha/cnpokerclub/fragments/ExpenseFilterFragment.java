@@ -25,8 +25,6 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.ExpenseFilterAdapter;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ExpensesViewModel;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
-import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.dummy.DummyContent;
-import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 

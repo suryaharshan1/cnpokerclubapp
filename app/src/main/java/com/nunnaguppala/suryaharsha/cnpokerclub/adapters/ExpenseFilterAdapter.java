@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.ExpenseFilterFragment.OnListFragmentInteractionListener;
-import com.nunnaguppala.suryaharsha.cnpokerclub.fragments.dummy.DummyContent.DummyItem;
 
 import java.util.Collections;
 import java.util.List;
