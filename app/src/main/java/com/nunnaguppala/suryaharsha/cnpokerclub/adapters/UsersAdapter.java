@@ -103,7 +103,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
 
     @Override
     public long getItemId(int position) {
-        return usersShareAndDetails.get(position).hashCode();
+        return usersShareAndDetails.get(position).getUser().getId();
     }
 
     @Override

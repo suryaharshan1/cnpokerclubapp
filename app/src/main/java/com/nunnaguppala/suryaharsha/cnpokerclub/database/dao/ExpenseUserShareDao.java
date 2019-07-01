@@ -13,11 +13,12 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.ExpenseUserShareA
 
 import java.util.List;
 
+import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface ExpenseUserShareDao {
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = IGNORE)
     void insert(ExpenseUserShareEntity expenseUserShare);
 
     @Update

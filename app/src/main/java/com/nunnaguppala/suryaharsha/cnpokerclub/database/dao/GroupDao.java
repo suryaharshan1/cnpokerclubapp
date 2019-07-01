@@ -14,12 +14,11 @@ import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 
 import java.util.List;
 
-import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
-
+import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 
 @Dao
 public interface GroupDao {
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = IGNORE)
     void insert(GroupEntity user);
 
     @Update
