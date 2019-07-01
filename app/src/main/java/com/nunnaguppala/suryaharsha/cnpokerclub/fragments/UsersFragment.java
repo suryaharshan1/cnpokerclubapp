@@ -11,30 +11,21 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.nunnaguppala.suryaharsha.cnpokerclub.PokerClubApplication;
 import com.nunnaguppala.suryaharsha.cnpokerclub.R;
 import com.nunnaguppala.suryaharsha.cnpokerclub.adapters.UsersAdapter;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.Splitwise;
-import com.nunnaguppala.suryaharsha.cnpokerclub.api.splitwise.model.ListExpenses;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.ExpenseEntity;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.entities.UserEntity;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.pojos.ExpenseUserShareAndDetails;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.repositories.UserRepository;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ExpensesViewModel;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.GroupsViewModel;
-import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.UsersViewModel;
 import com.nunnaguppala.suryaharsha.cnpokerclub.database.viewmodels.ViewModelFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -108,16 +99,19 @@ public class UsersFragment extends Fragment implements LifecycleOwner {
         usersAdapter.setHasStableIds(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.getItemAnimator().setChangeDuration(0);
         recyclerView.setAdapter(usersAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(40);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        RecyclerView.ItemAnimator animator = recyclerView.getItemAnimator();
+        if (animator instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) animator).setSupportsChangeAnimations(false);
+        }
         expensesViewModel = ViewModelProviders.of(this, mViewModelFactory).get(ExpensesViewModel.class);
         groupsViewModel = ViewModelProviders.of(this, mViewModelFactory).get(GroupsViewModel.class);
-        groupsViewModel.getAllGroups();
+        groupsViewModel.init();
         expensesViewModel.getAllExpenseSharesForUsersInGroup(groupId).observe(this, new Observer<List<ExpenseUserShareAndDetails>>() {
             @Override
             public void onChanged(@Nullable List<ExpenseUserShareAndDetails> expenseUserShareAndDetails) {
@@ -126,13 +120,6 @@ public class UsersFragment extends Fragment implements LifecycleOwner {
             }
         });
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onUsersFragmentInteraction(uri);
-        }
     }
 
     @Override
